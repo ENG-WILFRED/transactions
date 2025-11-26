@@ -128,7 +128,7 @@ export async function initiateStkPush(request: StkPushRequest): Promise<StkPushR
         PartyA: request.phoneNumber,
         PartyB: config.shortcode,
         PhoneNumber: request.phoneNumber,
-        CallBackURL: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/payment/mpesa/callback`,
+        CallBackURL: process.env.NEXT_PUBLIC_APP_URL,
         AccountReference: request.accountReference,
         TransactionDesc: request.transactionDescription,
       }),
