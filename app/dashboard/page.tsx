@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getDashboardData } from "@/app/actions/dashboard";
-import { logoutUser } from "@/app/actions/auth";
+import { dashboardApi, authApi } from "@/app/lib/api-client";
 import {
   ArrowUpRight,
   ArrowDownRight,
@@ -40,16 +39,31 @@ export default function Dashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res: any = await getDashboardData();
-
-        if (!res.success) {
+        // Verify token
+        const verifyRes: any = await authApi.verify();
+        if (!verifyRes.success) {
           router.push("/login");
           return;
         }
 
-        setUser(res.user);
-        setTransactions(res.transactions || []);
-        setBalance(res.balance || 0);
+        // Get user data
+        const userRes: any = await dashboardApi.getUser();
+        if (!userRes.success) {
+          router.push("/login");
+          return;
+        }
+
+        // Get transactions
+        const transRes: any = await dashboardApi.getTransactions();
+        const transactions = transRes.success ? (transRes.transactions || []) : [];
+
+        // Get stats
+        const statsRes: any = await dashboardApi.getStats();
+        const balance = statsRes.success ? (statsRes.balance || 0) : 0;
+
+        setUser(userRes.user);
+        setTransactions(transactions);
+        setBalance(balance);
       } catch (err) {
         console.error(err);
         router.push("/login");
@@ -63,7 +77,7 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      await logoutUser();
+      localStorage.removeItem('auth_token');
       router.push("/");
     } catch (err) {
       console.error(err);
@@ -135,9 +149,9 @@ export default function Dashboard() {
             <div className="p-3 rounded-xl bg-green-500 text-white mb-4 shadow">
               <CreditCard size={24} />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Make Payment</h3>
+            <h3 className="text-xl font-bold text-gray-900">Pension Plans</h3>
             <p className="text-gray-600 mt-1">
-              Send money instantly via M-Pesa STK push.
+              View and invest in curated pension plans.
             </p>
           </Link>
 

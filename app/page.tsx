@@ -41,14 +41,14 @@ export default function Home() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight drop-shadow-sm">
               Your All-In-One
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600 animate-gradient-x">
-                Transaction Manager
+                Pension Manager
               </span>
             </h1>
 
             <p className="mt-5 mb-3 text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed max-w-xl">
-              Track payments, complete M-Pesa transactions instantly, and manage
-              financial activity in a secure and easy-to-use dashboard crafted
-              for speed and reliability.
+              Grow your retirement savings — explore pension plans, make
+              contributions, and track your long-term performance in a clean
+              and secure dashboard built for retirement planning.
             </p>
 
             {/* CTA BUTTONS */}
@@ -75,11 +75,10 @@ export default function Home() {
             >
 
               <Feature
-            
-                title="Fast M-Pesa Payments"
+                title="Pension Plans & Contributions"
                 icon={<Zap className="text-indigo-600 w-6 h-6" />}
               >
-                Quick STK push, auto-confirmation & instant updates.
+                Curated plans, suggested contributions, and simple one-click investing.
               </Feature>
 
               <Feature

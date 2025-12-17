@@ -3,7 +3,7 @@
 import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { registerUser, loginUser } from '@/app/actions/auth';
+import { authApi } from '@/app/lib/api-client';
 
 interface AuthFormProps {
   isLogin?: boolean;
@@ -14,6 +14,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [stkStatus, setStkStatus] = useState('');
+  const [paymentUrl, setPaymentUrl] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -22,42 +23,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
     phone: '',
   });
 
-  const pollTransactionStatus = async (transactionId: string) => {
-    // Poll for transaction completion for up to 2 minutes
-    const maxAttempts = 24;
-    const pollInterval = 5000; // 5 seconds
-
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      try {
-        const response = await fetch(`/api/payment/mpesa/status?transactionId=${transactionId}`);
-        if (response.ok) {
-          const result = await response.json();
-          if (result.transaction?.status === 'completed') {
-            setStkStatus('✅ Payment successful! Redirecting to dashboard...');
-            setTimeout(() => {
-              router.push('/dashboard');
-            }, 1000);
-            return true;
-          } else if (result.transaction?.status === 'failed') {
-            setError('Payment failed. Please try again.');
-            setLoading(false);
-            return false;
-          }
-        }
-      } catch (err) {
-        console.error('Error polling transaction status:', err);
-      }
-
-      if (attempt < maxAttempts - 1) {
-        await new Promise(resolve => setTimeout(resolve, pollInterval));
-      }
-    }
-
-    // Timeout - user can manually check or retry
-    setStkStatus('Payment status unclear. Please check your account or try again.');
-    setLoading(false);
-    return false;
-  };
+  // (MPESA flows removed) registration now completes immediately.
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -68,7 +34,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
     try {
       let result;
       if (isLogin) {
-        result = await loginUser({
+        result = await authApi.login({
           email: formData.email,
           password: formData.password,
         });
@@ -77,25 +43,34 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
           setLoading(false);
           return;
         }
-        // Login successful - redirect immediately
+        // Login successful - store token and redirect
+        localStorage.setItem('auth_token', result.token);
         router.push('/dashboard');
       } else {
-        result = await registerUser(formData);
+        result = await authApi.register(formData);
         if (!result.success) {
           setError(result.error || 'An error occurred');
           setLoading(false);
           return;
         }
 
-        // Wait for STK push completion before navigating
-        if (result.stkPushInitiated && result.transactionId) {
-          setStkStatus('📱 M-Pesa prompt sent to your phone. Please complete the payment (1 KES)...');
-          // Poll for transaction status
-          await pollTransactionStatus(result.transactionId);
-        } else {
-          setError(result.message || 'Failed to initiate payment');
+        // If gateway URL was returned, ask user to complete external 1 KES payment
+        if (result.paymentUrl) {
+          setStkStatus('🔗 Registration pending - please complete the 1 KES payment via the external gateway.');
+          setPaymentUrl(result.paymentUrl);
           setLoading(false);
+          return;
         }
+
+        // If no gateway configured but registration was created, show message and wait
+        if (result.transactionId && !result.paymentUrl) {
+          setStkStatus(result.message || 'Registration created. Awaiting external payment.');
+          setLoading(false);
+          return;
+        }
+
+        // Default: registration created and completed inline
+        router.push('/dashboard');
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -230,6 +205,19 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
             {isLogin ? 'Sign Up' : 'Sign In'}
           </Link>
         </p>
+        {paymentUrl && (
+          <div className="mt-4 text-center">
+            <a
+              href={paymentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg"
+            >
+              Open Payment Gateway to pay 1 KES
+            </a>
+            <p className="text-xs text-gray-500 mt-2">After payment completes, return here to sign in.</p>
+          </div>
+        )}
       </div>
     </div>
   );
