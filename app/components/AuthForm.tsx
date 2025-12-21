@@ -37,7 +37,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
     try {
       if (isLogin) {
         const result = await authApi.login({
-          email: formData.email,
+          identifier: formData.email,
           password: formData.password,
         });
 
@@ -198,7 +198,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email or Username
+              Email or Username or phone
             </label>
             <input
               id="email"
