@@ -28,10 +28,10 @@ export default function LoginForm() {
 
     try {
       const result = await authApi.login({
-        email: formData.email,
+        identifier: formData.email,
         password: formData.password,
       });
-
+console.log('Login result:', result);
       if (!result.success) {
         toast.error(result.error || 'Invalid credentials');
         setLoading(false);
