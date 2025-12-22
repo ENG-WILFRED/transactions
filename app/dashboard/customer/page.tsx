@@ -223,7 +223,7 @@ export default function CustomerDashboard() {
       <div className="absolute top-10 left-10 w-40 h-40 bg-indigo-300/30 blur-3xl rounded-full animate-floating-slow" />
       <div className="absolute bottom-16 right-10 w-52 h-52 bg-purple-300/20 blur-3xl rounded-full animate-floating-slower" />
 
-      <DashboardHeader firstName={user?.firstName} lastName={user?.lastName} userType="customer" />
+      <DashboardHeader firstName={user?.firstName ?? 'User'} lastName={user?.lastName ?? ''} userType={'customer'} />
 
       <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 sm:space-y-10">
         <UserProfile user={user} />
@@ -236,7 +236,7 @@ export default function CustomerDashboard() {
 
         <PensionPlans plans={pensionPlans} />
         <TransactionHistory transactions={transactions} />
-        <QuickActions userType="customer" />
+        <QuickActions userType={'customer'} />
       </main>
 
       <AnimatedFooter />

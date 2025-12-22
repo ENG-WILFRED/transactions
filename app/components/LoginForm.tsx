@@ -38,6 +38,25 @@ export default function LoginForm() {
         return;
       }
 
+      // If API returned token and user, store them now (login stage)
+      if (result.token) {
+        try {
+          localStorage.setItem('access_token', result.token);
+          localStorage.setItem('refresh_token', result.token);
+          localStorage.setItem('auth_token', result.token);
+        } catch (err) {
+          console.warn('Failed to store tokens in localStorage', err);
+        }
+      }
+
+      if (result.user) {
+        try {
+          localStorage.setItem('user', JSON.stringify(result.user));
+        } catch (err) {
+          console.warn('Failed to store user in localStorage', err);
+        }
+      }
+
       toast.success('OTP sent to your email');
       router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
     } catch (err) {

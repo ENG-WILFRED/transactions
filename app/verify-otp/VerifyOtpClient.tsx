@@ -6,50 +6,7 @@ import OtpInput from '@/app/components/OtpInput';
 import { toast } from 'sonner';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
-// Mock login data
-const MOCK_LOGIN_DATA = {
-  success: true,
-  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlYWRmYzgxNy1lNmI5LTQwZmQtOGU2Ni0wYjVlOTE5YWNmZjYiLCJlbWFpbCI6ImtpbWFuaXdpbGZyZWQ5NUBnbWFpbC5jb20iLCJmaXJzdE5hbWUiOiJXSUxGUkVEIiwibGFzdE5hbWUiOiJLSU1BTkkiLCJhZ2UiOjE5LCJpYXQiOjE3NjYzNDY2NDUsImV4cCI6MTc2Njk1MTQ0NX0.2c0WLM7q6DPKKVGPSu9LB6pNUsCmlkvFH5jCqwcxcnk',
-  user: {
-    id: 'eadfc817-e6b9-40fd-8e66-0b5e919acff6',
-    email: 'kimaniwilfred95@gmail.com',
-    firstName: 'WILFRED',
-    lastName: 'KIMANI',
-    age: 30,
-    dateOfBirth: '1995-11-14',
-    numberOfChildren: 2,
-    phone: '+254712345678',
-    idNumber: '12345678',
-    idType: 'NATIONAL_ID',
-    employer: 'Tech Solutions Limited',
-    employmentStatus: 'EMPLOYED',
-    salary: 85000,
-    department: 'Software Engineering',
-    address: {
-      street: '123 Ngong Road',
-      city: 'Nairobi',
-      county: 'Nairobi',
-      postalCode: '00100',
-      country: 'Kenya',
-    },
-    bankAccount: {
-      accountNumber: '1234567890',
-      bankName: 'Kenya Commercial Bank',
-      bankCode: 'KCB',
-      accountType: 'SAVINGS',
-    },
-    nextOfKin: {
-      name: 'Grace Kimani',
-      relationship: 'SPOUSE',
-      phone: '+254712345679',
-      address: '123 Ngong Road, Nairobi',
-    },
-    kra: 'A012345678B',
-    nssfNumber: 'IV/123456',
-    pensionStatus: 'ACTIVE',
-    membershipDate: '2020-03-15',
-  },
-};
+// NOTE: user and tokens are stored at login. OTP verification should not overwrite user storage.
 
 export default function VerifyOtpClient() {
   const router = useRouter();
@@ -74,17 +31,15 @@ export default function VerifyOtpClient() {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Store mock token and user data
-      localStorage.setItem('access_token', MOCK_LOGIN_DATA.token);
-      localStorage.setItem('refresh_token', MOCK_LOGIN_DATA.token);
-      localStorage.setItem('auth_token', MOCK_LOGIN_DATA.token);
-      localStorage.setItem('user', JSON.stringify(MOCK_LOGIN_DATA.user));
-      
-      // Set auth cookie for middleware
-      document.cookie = 'auth=true; path=/; max-age=86400';
+      // On successful OTP verification we set an auth cookie (middleware/proxy may rely on it).
+      // Tokens and user should already have been stored at login.
+      try {
+        document.cookie = 'auth=true; path=/; max-age=86400';
+      } catch (err) {
+        console.warn('Failed to set auth cookie', err);
+      }
 
       toast.success('OTP verified successfully!');
-      
       // Redirect to dashboard
       router.push('/dashboard');
     } catch (err) {

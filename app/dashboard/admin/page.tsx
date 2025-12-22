@@ -30,7 +30,7 @@ interface Member {
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState("Admin");
+  const [user, setUser] = useState<{ firstName?: string; lastName?: string; email?: string; role?: string } | null>(null);
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 3482,
     activeUsers: 3245,
@@ -103,9 +103,9 @@ export default function AdminDashboard() {
         const storedUser = userStr ? JSON.parse(userStr) : null;
 
         if (storedUser) {
-          const fullName = `${storedUser.firstName || 'Admin'} ${storedUser.lastName || 'Panel'}`;
-          setUserName(storedUser.firstName || fullName);
-          toast.success(`Welcome Admin, ${storedUser.firstName || 'Admin'}!`);
+          setUser(storedUser);
+          const displayName = `${storedUser.firstName || 'Admin'}${storedUser.lastName ? ' ' + storedUser.lastName : ''}`;
+          toast.success(`Welcome ${storedUser.firstName || 'Admin'}!`);
         }
 
         // Simulate data loading
@@ -152,13 +152,13 @@ export default function AdminDashboard() {
       <div className="absolute top-10 left-10 w-40 h-40 bg-red-300/30 blur-3xl rounded-full animate-floating-slow" />
       <div className="absolute bottom-16 right-10 w-52 h-52 bg-orange-300/20 blur-3xl rounded-full animate-floating-slower" />
 
-      <DashboardHeader firstName={userName} lastName="(Admin)" userType="admin" />
+      <DashboardHeader firstName={user?.firstName ?? 'Admin'} lastName={user?.lastName ?? ''} userType={'admin'} />
 
       <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 sm:space-y-10">
 
         {/* Welcome Banner */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
-          <h1 className="text-2xl sm:text-3xl font-bold">Welcome, {userName}! 👋</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Welcome, {user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : 'Admin'}! 👋</h1>
           <p className="text-indigo-100 mt-2">Manage members, monitor system health, and review reports from your admin dashboard.</p>
         </div>
 
