@@ -7,6 +7,7 @@ import DashboardHeader from "@/app/components/dashboard/DashboardHeader";
 import AnimatedFooter from "@/app/components/AnimatedFooter";
 import { Users, TrendingUp, PieChart, AlertCircle, CheckCircle, Clock, BarChart3, Wallet, Settings, FileText, Shield } from "lucide-react";
 import Link from "next/link";
+import { userApi } from "@/app/lib/api-client";
 
 interface AdminStats {
   totalUsers: number;
@@ -102,9 +103,20 @@ export default function AdminDashboard() {
         const userStr = localStorage.getItem('user');
         const storedUser = userStr ? JSON.parse(userStr) : null;
 
-        if (storedUser) {
+        if (!storedUser?.id) {
+          toast.error('User ID not found');
+          router.push('/login');
+          return;
+        }
+
+        // Fetch full user data from API
+        const userResponse = await userApi.getById(storedUser.id);
+        if (userResponse.success && userResponse.user) {
+          setUser(userResponse.user);
+          toast.success(`Welcome ${userResponse.user.firstName || 'Admin'}!`);
+        } else {
+          // Fallback to stored user if API fails
           setUser(storedUser);
-          const displayName = `${storedUser.firstName || 'Admin'}${storedUser.lastName ? ' ' + storedUser.lastName : ''}`;
           toast.success(`Welcome ${storedUser.firstName || 'Admin'}!`);
         }
 

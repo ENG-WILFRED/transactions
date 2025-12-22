@@ -12,6 +12,7 @@ import BankDetailsComponent from "@/app/components/dashboard/BankDetails";
 import PensionPlans from "@/app/components/dashboard/PensionPlans";
 import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
 import QuickActions from "@/app/components/dashboard/QuickActions";
+import { userApi } from "@/app/lib/api-client";
 
 interface User {
   id: string;
@@ -20,7 +21,10 @@ interface User {
   lastName?: string;
   phone?: string;
   employer?: string;
-  salary?: number;
+  occupation?: string;
+  salary?: string | number;
+  contributionRate?: string | number;
+  retirementAge?: number;
   dateOfBirth?: string;
   numberOfChildren?: number;
   address?: any;
@@ -62,14 +66,24 @@ export default function CustomerDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        // Get user data from localStorage
+        // Get user from localStorage
         const userStr = localStorage.getItem('user');
         const storedUser = userStr ? JSON.parse(userStr) : null;
 
-        if (storedUser) {
-          setUser(storedUser);
-          toast.success(`Welcome back, ${storedUser.firstName}!`);
+        if (!storedUser?.id) {
+          router.push('/login');
+          return;
         }
+
+        // Fetch full user data from API
+        const userResponse = await userApi.getById(storedUser.id);
+        if (userResponse.success && userResponse.user) {
+          setUser(userResponse.user);
+        } else {
+          // Fallback to stored user if API fails
+          setUser(storedUser);
+        }
+        toast.success(`Welcome back, ${(userResponse.user?.firstName || storedUser.firstName)}!`);
 
         // Mock pension plans
         const mockPensionPlans: PensionPlan[] = [
@@ -190,12 +204,6 @@ export default function CustomerDashboard() {
         setBalance(totalBalance);
         setProjectedRetirement(Math.round(totalBalance * Math.pow(1.08, 30)));
 
-        // Simulate real-time data updates
-        setTimeout(() => {
-          toast.success('Portfolio updated: +KES 2,450 from returns');
-          setBalance(prev => prev + 2450);
-        }, 3000);
-
       } catch (err) {
         console.error(err);
         toast.error('Failed to load dashboard');
@@ -227,10 +235,26 @@ export default function CustomerDashboard() {
 
       <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 sm:space-y-10">
         <UserProfile user={user} />
-        <BalanceCards balance={balance} totalContributions={totalContributions} projectedRetirement={projectedRetirement} />
+        <BalanceCards 
+          balance={balance} 
+          totalContributions={totalContributions} 
+          projectedRetirement={projectedRetirement}
+          user={user ? {
+            salary: user.salary,
+            contributionRate: user.contributionRate,
+            dateOfBirth: user.dateOfBirth,
+            retirementAge: user.retirementAge,
+          } : undefined}
+        />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          <EmploymentDetails employer={user?.employer} salary={user?.salary} />
+          <EmploymentDetails 
+            employer={user?.employer} 
+            occupation={user?.occupation}
+            salary={user?.salary} 
+            contributionRate={user?.contributionRate}
+            retirementAge={user?.retirementAge}
+          />
           <BankDetailsComponent bankAccount={user?.bankAccount} />
         </div>
 

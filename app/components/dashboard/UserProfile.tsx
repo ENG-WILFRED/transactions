@@ -5,6 +5,8 @@ interface User {
   lastName?: string;
   nssfNumber?: string;
   kra?: string;
+  nationalId?: string;
+  createdAt?: string;
 }
 
 interface UserProfileProps {
@@ -12,6 +14,12 @@ interface UserProfileProps {
 }
 
 export default function UserProfile({ user }: UserProfileProps) {
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="md:col-span-2 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-6">
@@ -23,7 +31,7 @@ export default function UserProfile({ user }: UserProfileProps) {
             <div>
               <h3 className="text-xl font-bold text-gray-900">{user?.firstName} {user?.lastName}</h3>
               <p className="text-gray-600 text-sm">{user?.email}</p>
-              <p className="text-gray-500 text-xs mt-1">Member Since: Mar 15, 2020</p>
+              <p className="text-gray-500 text-xs mt-1">Member Since: {formatDate(user?.createdAt)}</p>
             </div>
           </div>
           <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Active</span>
@@ -35,7 +43,7 @@ export default function UserProfile({ user }: UserProfileProps) {
         <div className="space-y-2 text-sm">
           <div>
             <span className="text-gray-500">ID Number:</span>
-            <p className="font-semibold text-gray-900">{user?.id?.slice(0, 8)}</p>
+            <p className="font-semibold text-gray-900">{user?.nationalId}</p>
           </div>
           <div>
             <span className="text-gray-500">NSSF:</span>

@@ -141,6 +141,14 @@ export const dashboardApi = {
       method: 'GET',
     }),
 };
+
+// User API calls
+export const userApi = {
+  getById: (userId: string) =>
+    apiCall(`/api/users/${userId}`, {
+      method: 'GET',
+    }),
+};
 // Health check
 export const healthApi = {
   check: () => apiCall('/api/health'),

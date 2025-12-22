@@ -2,11 +2,17 @@ import { User } from 'lucide-react';
 
 interface EmploymentDetailsProps {
   employer?: string;
-  department?: string;
-  salary?: number;
+  occupation?: string;
+  salary?: string | number;
+  contributionRate?: string | number;
+  retirementAge?: number;
 }
 
-export default function EmploymentDetails({ employer, department, salary }: EmploymentDetailsProps) {
+export default function EmploymentDetails({ employer, occupation, salary, contributionRate, retirementAge }: EmploymentDetailsProps) {
+  // Format salary as number for calculation
+  const salaryNum = typeof salary === 'string' ? parseInt(salary) : (salary || 85000);
+  const formatRate = typeof contributionRate === 'string' && !contributionRate.includes('%') ? `${contributionRate}%` : (contributionRate || '38.67%');
+  
   return (
     <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-6">
       <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -16,11 +22,11 @@ export default function EmploymentDetails({ employer, department, salary }: Empl
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-gray-600">Employer:</span>
-          <span className="font-semibold text-gray-900">{employer || 'Tech Solutions Limited'}</span>
+          <span className="font-semibold text-gray-900">{employer || 'N/A'}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-600">Department:</span>
-          <span className="font-semibold text-gray-900">{department || 'Software Engineering'}</span>
+          <span className="text-gray-600">Occupation:</span>
+          <span className="font-semibold text-gray-900">{occupation || 'N/A'}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Status:</span>
@@ -28,12 +34,18 @@ export default function EmploymentDetails({ employer, department, salary }: Empl
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Monthly Salary:</span>
-          <span className="font-semibold text-gray-900">KES {(salary || 85000).toLocaleString()}</span>
+          <span className="font-semibold text-gray-900">KES {salaryNum.toLocaleString()}</span>
         </div>
         <div className="flex justify-between border-t pt-3 mt-3">
           <span className="text-gray-600">Contribution Rate:</span>
-          <span className="font-semibold text-gray-900">38.67%</span>
+          <span className="font-semibold text-gray-900">{formatRate}</span>
         </div>
+        {retirementAge && (
+          <div className="flex justify-between">
+            <span className="text-gray-600">Retirement Age:</span>
+            <span className="font-semibold text-gray-900">{retirementAge}</span>
+          </div>
+        )}
       </div>
     </div>
   );
