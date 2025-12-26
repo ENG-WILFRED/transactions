@@ -20,9 +20,9 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
     <div className="space-y-2 pb-4 mb-4 border-b">
       <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">Personal</h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div>
-          <label htmlFor="firstName" className="block text-xs font-medium text-gray-700 mb-0.5">
+          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
             First Name
           </label>
           <input
@@ -31,13 +31,13 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
             type="text"
             value={formData.firstName}
             onChange={onChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+            className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             placeholder="John"
           />
         </div>
 
         <div>
-          <label htmlFor="lastName" className="block text-xs font-medium text-gray-700 mb-0.5">
+          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
             Last Name
           </label>
           <input
@@ -46,13 +46,13 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
             type="text"
             value={formData.lastName}
             onChange={onChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+            className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             placeholder="Doe"
           />
         </div>
 
         <div>
-          <label htmlFor="gender" className="block text-xs font-medium text-gray-700 mb-0.5">
+          <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
             Gender
           </label>
           <select
@@ -60,7 +60,7 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
             name="gender"
             value={formData.gender}
             onChange={onChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
+            className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           >
             <option value="">Select</option>
             <option value="Male">Male</option>
@@ -72,7 +72,7 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
         <div>
-          <label htmlFor="dateOfBirth" className="block text-xs font-medium text-gray-700 mb-0.5">
+          <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
             Date of Birth
           </label>
           <input
@@ -81,12 +81,12 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
             type="date"
             value={formData.dateOfBirth}
             onChange={onChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
+            className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           />
         </div>
 
         <div>
-          <label htmlFor="nationalId" className="block text-xs font-medium text-gray-700 mb-0.5">
+          <label htmlFor="nationalId" className="block text-sm font-medium text-gray-700 mb-1">
             National ID
           </label>
           <input
@@ -95,13 +95,13 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
             type="text"
             value={formData.nationalId}
             onChange={onChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+            className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
             placeholder="ID"
           />
         </div>
 
         <div>
-          <label htmlFor="maritalStatus" className="block text-xs font-medium text-gray-700 mb-0.5">
+          <label htmlFor="maritalStatus" className="block text-sm font-medium text-gray-700 mb-1">
             Marital Status
           </label>
           <select
@@ -109,7 +109,7 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
             name="maritalStatus"
             value={formData.maritalStatus}
             onChange={onChange}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
+            className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           >
             <option value="">Select</option>
             <option value="Single">Single</option>
@@ -123,7 +123,7 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
       {isMarried && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
           <div>
-            <label htmlFor="spouseName" className="block text-xs font-medium text-gray-700 mb-0.5">
+            <label htmlFor="spouseName" className="block text-sm font-medium text-gray-700 mb-1">
               Spouse Name
             </label>
             <input
@@ -132,13 +132,13 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
               type="text"
               value={formData.spouseName}
               onChange={onChange}
-              className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+              className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
               placeholder="Name"
             />
           </div>
 
           <div>
-            <label htmlFor="spouseDob" className="block text-xs font-medium text-gray-700 mb-0.5">
+            <label htmlFor="spouseDob" className="block text-sm font-medium text-gray-700 mb-1">
               Spouse DOB
             </label>
             <input
@@ -147,7 +147,7 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
               type="date"
               value={formData.spouseDob}
               onChange={onChange}
-              className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
+              className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
           </div>
         </div>

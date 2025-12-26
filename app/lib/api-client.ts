@@ -1,5 +1,13 @@
 'use client';
 
+import type {
+  RegistrationFormData,
+  RegistrationInitResponse,
+  RegistrationStatusResponse,
+  LoginResponse,
+  OtpVerificationResponse,
+} from './schemas';
+
 // Client library for calling the backend API
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
@@ -58,52 +66,72 @@ export async function apiCall<T = any>(
   }
 }
 
-// Auth API calls
+// Auth API calls - Following documented auth flow
 export const authApi = {
-  register: (data: {
-    email: string;
-    password: string;
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
-  }) => apiCall('/api/auth/register', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
-
-  completeRegistration: (transactionId: string) =>
-    apiCall('/api/auth/register/complete', {
+  /**
+   * POST /api/auth/register
+   * Initiates registration and M-Pesa payment
+   */
+  register: (data: RegistrationFormData) =>
+    apiCall<RegistrationInitResponse>('/api/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ transactionId }),
+      body: JSON.stringify(data),
     }),
 
-  // Poll registration/payment status
+  /**
+   * GET /api/auth/register/status/{transactionId}
+   * Polls payment status and completes registration
+   */
   getRegisterStatus: (transactionId: string) =>
-    apiCall(`/api/auth/register/status/${transactionId}`, {
-      method: 'GET',
-    }),
+    apiCall<RegistrationStatusResponse>(
+      `/api/auth/register/status/${transactionId}`,
+      {
+        method: 'GET',
+      }
+    ),
 
-  sendOtp: (data: { email: string }) =>
-    apiCall('/api/auth/send-otp', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
-
-  verifyOtp: (data: { email: string; otp: string }) =>
-    apiCall('/api/auth/verify-otp', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
-
+  /**
+   * POST /api/auth/login
+   * Step 1: Verify password and send OTP
+   */
   login: (data: { identifier: string; password: string }) =>
-    apiCall('/api/auth/login', {
+    apiCall<LoginResponse>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
+  /**
+   * POST /api/auth/login/otp
+   * Step 2: Verify OTP and complete login
+   * Optional newPassword required for first-time users (temporary password exchange)
+   */
+  loginOtp: (data: {
+    identifier: string;
+    otp: string;
+    newPassword?: string;
+  }) =>
+    apiCall<OtpVerificationResponse>('/api/auth/login/otp', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * GET /api/auth/verify
+   * Verify current JWT token validity
+   */
   verify: () =>
     apiCall('/api/auth/verify', {
       method: 'GET',
+    }),
+
+  /**
+   * POST /api/auth/send-otp
+   * Send OTP to email (for resend functionality)
+   */
+  sendOtp: (data: { identifier: string }) =>
+    apiCall('/api/auth/send-otp', {
+      method: 'POST',
+      body: JSON.stringify(data),
     }),
 };
 
@@ -124,6 +152,7 @@ export const paymentApi = {
       method: 'GET',
     }),
 };
+
 // Dashboard API calls
 export const dashboardApi = {
   getUser: () =>
@@ -148,7 +177,16 @@ export const userApi = {
     apiCall(`/api/users/${userId}`, {
       method: 'GET',
     }),
+  promoteToAdmin: (userId: string) =>
+    apiCall(`/api/users/${userId}/promote`, {
+      method: 'POST',
+    }),
+  demoteToCustomer: (userId: string) =>
+    apiCall(`/api/users/${userId}/demote`, {
+      method: 'POST',
+    }),
 };
+
 // Health check
 export const healthApi = {
   check: () => apiCall('/api/health'),

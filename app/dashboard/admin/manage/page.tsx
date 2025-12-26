@@ -5,16 +5,17 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import AnimatedFooter from '@/app/components/AnimatedFooter';
 import { Users, Search, Download, CheckCircle } from 'lucide-react';
+import { userApi } from '@/app/lib/api-client';
 
 export default function AdminManageList() {
   const [members, setMembers] = useState(() => {
     return [
-      { id: '1', name: 'Wilfred Kimani', email: 'kimaniwilfred95@gmail.com', joinDate: '2024-12-21', status: 'active', contribution: 33000, balance: 548000 },
-      { id: '2', name: 'Grace Ouma', email: 'grace.ouma@example.com', joinDate: '2024-12-19', status: 'active', contribution: 25000, balance: 425000 },
-      { id: '3', name: 'James Kipchoge', email: 'james.kipchoge@example.com', joinDate: '2024-12-18', status: 'active', contribution: 18000, balance: 285000 },
-      { id: '4', name: 'Mary Mutua', email: 'mary.mutua@example.com', joinDate: '2024-12-15', status: 'inactive', contribution: 12000, balance: 145000 },
-      { id: '5', name: 'Peter Mwangi', email: 'peter.mwangi@example.com', joinDate: '2024-12-12', status: 'active', contribution: 22000, balance: 380000 },
-      { id: '6', name: 'Susan Njoki', email: 'susan.njoki@example.com', joinDate: '2024-12-10', status: 'active', contribution: 28000, balance: 420000 },
+      { id: '1', name: 'Wilfred Kimani', email: 'kimaniwilfred95@gmail.com', joinDate: '2024-12-21', status: 'active', contribution: 33000, balance: 548000, role: 'admin' },
+      { id: '2', name: 'Grace Ouma', email: 'grace.ouma@example.com', joinDate: '2024-12-19', status: 'active', contribution: 25000, balance: 425000, role: 'customer' },
+      { id: '3', name: 'James Kipchoge', email: 'james.kipchoge@example.com', joinDate: '2024-12-18', status: 'active', contribution: 18000, balance: 285000, role: 'customer' },
+      { id: '4', name: 'Mary Mutua', email: 'mary.mutua@example.com', joinDate: '2024-12-15', status: 'inactive', contribution: 12000, balance: 145000, role: 'customer' },
+      { id: '5', name: 'Peter Mwangi', email: 'peter.mwangi@example.com', joinDate: '2024-12-12', status: 'active', contribution: 22000, balance: 380000, role: 'customer' },
+      { id: '6', name: 'Susan Njoki', email: 'susan.njoki@example.com', joinDate: '2024-12-10', status: 'active', contribution: 28000, balance: 420000, role: 'customer' },
     ];
   });
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,6 +37,36 @@ export default function AdminManageList() {
       }
       return m;
     }));
+  };
+
+  const promoteUser = async (id: string) => {
+    try {
+      const res = await userApi.promoteToAdmin(id);
+      if (res.success) {
+        setMembers(prev => prev.map(m => m.id === id ? { ...m, role: 'admin' } : m));
+        toast.success('User promoted to admin');
+      } else {
+        toast.error(res.error || 'Failed to promote user');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to promote user');
+    }
+  };
+
+  const demoteUser = async (id: string) => {
+    try {
+      const res = await userApi.demoteToCustomer(id);
+      if (res.success) {
+        setMembers(prev => prev.map(m => m.id === id ? { ...m, role: 'customer' } : m));
+        toast.success('User demoted to customer');
+      } else {
+        toast.error(res.error || 'Failed to demote user');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to demote user');
+    }
   };
 
   return (
@@ -128,6 +159,21 @@ export default function AdminManageList() {
                         >
                           {m.status === 'active' ? 'Disable' : 'Enable'}
                         </button>
+                        {m.role !== 'admin' ? (
+                          <button
+                            onClick={() => promoteUser(m.id)}
+                            className="text-xs px-2 sm:px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 whitespace-nowrap"
+                          >
+                            Promote
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => demoteUser(m.id)}
+                            className="text-xs px-2 sm:px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 whitespace-nowrap"
+                          >
+                            Demote
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

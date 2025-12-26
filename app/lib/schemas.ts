@@ -9,8 +9,7 @@ const childSchema = z.object({
 // Registration form schema
 export const registrationSchema = z.object({
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().min(6, 'Please confirm your password'),
+  username: z.string().min(1, 'Username is required'),
   phone: z.string().min(1, 'Phone number is required for payment'),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
@@ -29,9 +28,6 @@ export const registrationSchema = z.object({
   salary: z.number().optional(),
   contributionRate: z.number().optional(),
   retirementAge: z.number().optional(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
 });
 
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
@@ -43,3 +39,58 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
+
+// OTP Verification schema
+export const otpVerificationSchema = z.object({
+  identifier: z.string().min(1, 'Email, username, or phone is required'),
+  otp: z.string().regex(/^\d{6}$/, 'OTP must be 6 digits'),
+  newPassword: z.string().min(6, 'Password must be at least 6 characters').optional(),
+});
+
+export type OtpVerificationData = z.infer<typeof otpVerificationSchema>;
+
+// Auth Response types
+export interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  role: 'customer' | 'admin';
+  numberOfChildren?: number;
+  dateOfBirth?: string;
+}
+
+export interface RegistrationInitResponse {
+  success: boolean;
+  status: 'payment_initiated';
+  message: string;
+  transactionId: string;
+  checkoutRequestId: string;
+  statusCheckUrl: string;
+}
+
+export interface RegistrationStatusResponse {
+  success: boolean;
+  status: 'payment_pending' | 'registration_completed' | 'payment_failed';
+  message: string;
+  transactionId: string;
+  token?: string;
+  user?: User;
+  error?: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface OtpVerificationResponse {
+  success: boolean;
+  message: string;
+  token?: string;
+  user?: User;
+  temporary?: boolean;
+  identifier?: string;
+  error?: string;
+}

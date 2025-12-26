@@ -17,6 +17,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    username: '',
     firstName: '',
     lastName: '',
     phone: '',
@@ -47,8 +48,9 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
           return;
         }
 
-        toast.success('OTP sent to your email');
-        router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
+        try { localStorage.setItem('auth_identifier', formData.email); } catch {}
+        toast.success(result.message || 'OTP sent to your email');
+        router.push(`/verify-otp?identifier=${encodeURIComponent(formData.email)}`);
       } else {
         const result = await authApi.register(formData);
         if (!result.success) {
