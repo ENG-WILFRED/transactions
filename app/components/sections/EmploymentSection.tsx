@@ -47,6 +47,8 @@ export default function EmploymentSection({ formData, onChange }: EmploymentSect
             id="salary"
             name="salary"
             type="number"
+            min="0"
+            step="0.01"
             value={formData.salary || ''}
             onChange={onChange}
             className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"

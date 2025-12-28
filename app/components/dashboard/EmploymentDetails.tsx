@@ -1,3 +1,4 @@
+///home/hp/JERE/pension/app/components/dashboard/EmploymentDetails.tsx
 import { User } from 'lucide-react';
 
 interface EmploymentDetailsProps {

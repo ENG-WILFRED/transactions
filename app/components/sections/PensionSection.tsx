@@ -37,6 +37,9 @@ export default function PensionSection({ formData, onChange }: PensionSectionPro
             id="retirementAge"
             name="retirementAge"
             type="number"
+            min="50"
+            max="80"
+            step="1"
             value={formData.retirementAge || ''}
             onChange={onChange}
             className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"

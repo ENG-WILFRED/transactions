@@ -16,6 +16,13 @@ interface PersonalSectionProps {
 export default function PersonalSection({ formData, errors, onChange }: PersonalSectionProps) {
   const isMarried = formData.maritalStatus === 'Married';
 
+  // Calculate max date (18 years ago from today)
+  const getMaxDate = () => {
+    const today = new Date();
+    const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    return maxDate.toISOString().split('T')[0];
+  };
+
   return (
     <div className="space-y-2 pb-4 mb-4 border-b">
       <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">Personal</h3>
@@ -73,16 +80,20 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
         <div>
           <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
-            Date of Birth
+            Date of Birth <span className="text-xs text-gray-500">(Must be 18+)</span>
           </label>
           <input
             id="dateOfBirth"
             name="dateOfBirth"
             type="date"
+            max={getMaxDate()}
             value={formData.dateOfBirth}
             onChange={onChange}
             className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           />
+          {errors.dateOfBirth && (
+            <p className="mt-1 text-xs text-red-600">{errors.dateOfBirth}</p>
+          )}
         </div>
 
         <div>
@@ -139,12 +150,13 @@ export default function PersonalSection({ formData, errors, onChange }: Personal
 
           <div>
             <label htmlFor="spouseDob" className="block text-sm font-medium text-gray-700 mb-1">
-              Spouse DOB
+              Spouse DOB <span className="text-xs text-gray-500">(Must be 18+)</span>
             </label>
             <input
               id="spouseDob"
               name="spouseDob"
               type="date"
+              max={getMaxDate()}
               value={formData.spouseDob}
               onChange={onChange}
               className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
