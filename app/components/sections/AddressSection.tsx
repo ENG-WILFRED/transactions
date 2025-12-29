@@ -311,21 +311,21 @@ export default function AddressSection({ formData, onChange }: AddressSectionPro
           </div>
 
           {isOpen && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-50 w-full mt-1 bg-white border-2 border-blue-500 rounded-lg shadow-2xl max-h-60 overflow-y-auto">
               {filteredCountries.length > 0 ? (
                 filteredCountries.map((country) => (
                   <div
                     key={country}
                     onClick={() => handleCountrySelect(country)}
-                    className={`px-4 py-3 cursor-pointer hover:bg-blue-50 transition ${
-                      formData.country === country ? 'bg-blue-100 font-semibold' : ''
+                    className={`px-4 py-3 cursor-pointer text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 transition-all ${
+                      formData.country === country ? 'bg-gradient-to-r from-blue-100 to-indigo-100 font-bold text-blue-800 border-l-4 border-blue-600' : ''
                     }`}
                   >
                     {country}
                   </div>
                 ))
               ) : (
-                <div className="px-4 py-3 text-gray-500 text-sm">No countries found</div>
+                <div className="px-4 py-3 text-gray-600 text-sm font-medium">No countries found</div>
               )}
             </div>
           )}
