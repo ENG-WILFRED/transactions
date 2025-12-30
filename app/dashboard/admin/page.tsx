@@ -8,7 +8,7 @@ import AnimatedFooter from "@/app/components/AnimatedFooter";
 import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
 import { 
   Users, TrendingUp, AlertCircle, CheckCircle, Clock, 
-  Wallet, Settings, FileText, Layers 
+  Wallet, Settings, FileText, Layers, UserPlus 
 } from "lucide-react";
 import Link from "next/link";
 import { userApi, dashboardApi } from "@/app/lib/api-client";
@@ -113,7 +113,6 @@ export default function AdminDashboard() {
     avgResponseTime: 145,
   });
 
-  // 🆕 NEW: Function to load all transactions (admin view)
   const loadAllTransactions = async () => {
     setLoadingTransactions(true);
     setShowTransactions(true);
@@ -126,7 +125,6 @@ export default function AdminDashboard() {
       } else {
         console.warn('Failed to load transactions:', transactionsResponse.error);
         toast.warning('⚠️ Could not load transactions from API');
-        // Fallback to sample data
         setTransactions([
           {
             id: "tx1",
@@ -157,7 +155,6 @@ export default function AdminDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        // Get user from localStorage
         const userStr = localStorage.getItem('user');
         const storedUser = userStr ? JSON.parse(userStr) : null;
 
@@ -167,17 +164,14 @@ export default function AdminDashboard() {
           return;
         }
 
-        // ⚠️ CRITICAL: Check if user is actually an admin
         if (storedUser.role !== 'admin') {
           toast.error('🚫 Access Denied: Admin privileges required');
           router.push('/dashboard/customer');
           return;
         }
 
-        // Fetch full user data from API
         const userResponse = await userApi.getById(storedUser.id);
         if (userResponse.success && userResponse.user) {
-          // Double-check role from API response
           if (userResponse.user.role !== 'admin') {
             toast.error('🚫 Access Denied: Admin privileges required');
             router.push('/dashboard/customer');
@@ -186,15 +180,12 @@ export default function AdminDashboard() {
           setUser(userResponse.user);
           toast.success(`Welcome ${userResponse.user.firstName || 'Admin'}!`);
         } else {
-          // Fallback to stored user if API fails
           setUser(storedUser);
           toast.success(`Welcome ${storedUser.firstName || 'Admin'}!`);
         }
 
-        // Simulate data loading
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // Simulate real-time metric updates
         setInterval(() => {
           setStats(prev => ({
             ...prev,
@@ -203,7 +194,6 @@ export default function AdminDashboard() {
           }));
         }, 8000);
 
-        // Simulate user activity
         setTimeout(() => {
           toast.success('System health check: All services operational');
         }, 2000);
@@ -231,7 +221,6 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-100 via-red-50 to-orange-100 relative overflow-x-hidden flex flex-col">
 
-      {/* Floating shapes */}
       <div className="absolute top-10 left-10 w-40 h-40 bg-red-300/30 blur-3xl rounded-full animate-floating-slow" />
       <div className="absolute bottom-16 right-10 w-52 h-52 bg-orange-300/20 blur-3xl rounded-full animate-floating-slower" />
 
@@ -245,7 +234,7 @@ export default function AdminDashboard() {
           <p className="text-indigo-100 mt-2">Manage members, monitor system health, and review reports from your admin dashboard.</p>
         </div>
 
-        {/* ADMIN STATS CARDS - Mobile Responsive */}
+        {/* ADMIN STATS CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
@@ -275,7 +264,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* SYSTEM METRICS - Mobile Responsive */}
+        {/* SYSTEM METRICS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
             <p className="text-xs sm:text-sm opacity-90">API Uptime</p>
@@ -304,12 +293,19 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* QUICK ACTIONS - WITH ACCOUNT TYPES */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {/* 🆕 UPDATED: QUICK ACTIONS WITH CREATE ADMIN */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
           <Link href="/dashboard/admin/manage" className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
             <Users size={32} className="text-indigo-600 mb-3" />
             <h3 className="font-bold text-gray-900 mb-1">Manage Users</h3>
             <p className="text-xs sm:text-sm text-gray-600">View & manage member accounts</p>
+          </Link>
+
+          {/* 🆕 NEW: Create Admin Link */}
+          <Link href="/dashboard/admin/create-admin" className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
+            <UserPlus size={32} className="text-green-600 mb-3" />
+            <h3 className="font-bold text-gray-900 mb-1">Create Admin</h3>
+            <p className="text-xs sm:text-sm text-gray-600">Add new administrator</p>
           </Link>
 
           <Link href="/dashboard/admin/reports" className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
@@ -319,7 +315,7 @@ export default function AdminDashboard() {
           </Link>
 
           <Link href="/dashboard/admin/settings" className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
-            <Settings size={32} className="text-green-600 mb-3" />
+            <Settings size={32} className="text-orange-600 mb-3" />
             <h3 className="font-bold text-gray-900 mb-1">Settings</h3>
             <p className="text-xs sm:text-sm text-gray-600">System configuration</p>
           </Link>
@@ -331,14 +327,13 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
-        {/* MEMBERS LIST - Mobile Responsive */}
+        {/* MEMBERS LIST */}
         <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
           <div className="px-4 sm:px-6 py-4 border-b border-gray-100 bg-white/60 flex items-center justify-between">
             <h3 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
               <Users size={20} className="sm:w-6 sm:h-6 text-indigo-600" />
               Member Management ({members.length})
             </h3>
-            {/* 🆕 NEW: Button to view all transactions */}
             <button
               onClick={loadAllTransactions}
               disabled={loadingTransactions}
@@ -401,12 +396,12 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* 🆕 NEW: All Transactions Section (Admin View) */}
+        {/* All Transactions Section */}
         {showTransactions && (
           <TransactionHistory transactions={transactions} />
         )}
 
-        {/* ALERTS & NOTIFICATIONS - Mobile Responsive */}
+        {/* ALERTS & NOTIFICATIONS */}
         <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6">
           <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
             <AlertCircle size={20} className="sm:w-6 sm:h-6 text-orange-600" />

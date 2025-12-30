@@ -1,4 +1,3 @@
-///home/hp/JERE/pension/app/lib/api-client.ts
 'use client';
 
 import type {
@@ -210,7 +209,38 @@ export const userApi = {
     }),
 };
 
-// 🆕 Account Types API calls (ADMIN ONLY)
+// 🆕 Admin API calls (ADMIN ONLY)
+export const adminApi = {
+  /**
+   * POST /api/auth/makeadmin
+   */
+  createAdmin: (data: {
+    email: string;
+    phone?: string;
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    userId?: string; 
+  }) =>
+    apiCall('/api/auth/makeadmin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * GET /api/admin/list
+   * Get all admin users (Admin only)
+   */
+  listAdmins: () =>
+    apiCall('/api/admin/list', {
+      method: 'GET',
+    }),
+};
+// Account Types API calls (ADMIN ONLY)
 export const accountTypeApi = {
   /**
    * GET /api/account-types

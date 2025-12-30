@@ -28,7 +28,7 @@ export default function DashboardHeader({ firstName, lastName, userType = 'custo
       <div className="w-full flex items-center justify-between py-4 px-8">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">
-            {userType === 'admin' ? 'Admin Dashboard' : 'Pension Dashboard'}
+            {userType === 'admin' ? 'Admin Dashboard' : 'AutoNest Dashboard'}
           </h1>
           <p className="text-gray-600 text-sm">
             Welcome, {firstName} {lastName}
