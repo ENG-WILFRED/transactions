@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/lib/schemas.ts
 import { z } from 'zod';
 
 // Child schema for the children array
@@ -71,6 +70,41 @@ export const otpVerificationSchema = z.object({
 
 export type OtpVerificationData = z.infer<typeof otpVerificationSchema>;
 
+// 🆕 Change PIN schema
+export const changePinSchema = z.object({
+  currentPin: z.string().regex(/^\d{4}$/, 'Current PIN must be exactly 4 digits'),
+  newPin: z.string().regex(/^\d{4}$/, 'New PIN must be exactly 4 digits'),
+}).refine((data) => data.currentPin !== data.newPin, {
+  message: 'New PIN must be different from current PIN',
+  path: ['newPin'],
+});
+
+export type ChangePinFormData = z.infer<typeof changePinSchema>;
+
+// 🆕 Request PIN Reset schema
+export const requestPinResetSchema = z.object({
+  phone: z.string().regex(/^\+254\d{9}$/, 'Phone must be in format +254XXXXXXXXX'),
+});
+
+export type RequestPinResetFormData = z.infer<typeof requestPinResetSchema>;
+
+// 🆕 Verify PIN Reset schema
+export const verifyPinResetSchema = z.object({
+  phone: z.string().regex(/^\+254\d{9}$/, 'Phone must be in format +254XXXXXXXXX'),
+  otp: z.string().regex(/^\d{6}$/, 'OTP must be 6 digits'),
+  newPin: z.string().regex(/^\d{4}$/, 'New PIN must be exactly 4 digits'),
+});
+
+export type VerifyPinResetFormData = z.infer<typeof verifyPinResetSchema>;
+
+// 🆕 USSD Login schema
+export const ussdLoginSchema = z.object({
+  phone: z.string().regex(/^\+254\d{9}$/, 'Phone must be in format +254XXXXXXXXX'),
+  pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly 4 digits'),
+});
+
+export type UssdLoginFormData = z.infer<typeof ussdLoginSchema>;
+
 // Auth Response types
 export interface User {
   id: string;
@@ -114,5 +148,33 @@ export interface OtpVerificationResponse {
   user?: User;
   temporary?: boolean;
   identifier?: string;
+  error?: string;
+}
+
+// 🆕 PIN Management Response types
+export interface ChangePinResponse {
+  success: boolean;
+  message: string;
+  error?: string;
+}
+
+export interface RequestPinResetResponse {
+  success: boolean;
+  message: string;
+  error?: string;
+}
+
+export interface VerifyPinResetResponse {
+  success: boolean;
+  message: string;
+  error?: string;
+}
+
+// 🆕 USSD Login Response
+export interface UssdLoginResponse {
+  success: boolean;
+  token: string;
+  user: User;
+  message?: string;
   error?: string;
 }

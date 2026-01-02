@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/lib/api-client.ts
 'use client';
 
 import type {
@@ -7,6 +6,14 @@ import type {
   RegistrationStatusResponse,
   LoginResponse,
   OtpVerificationResponse,
+  ChangePinFormData,
+  ChangePinResponse,
+  RequestPinResetFormData,
+  RequestPinResetResponse,
+  VerifyPinResetFormData,
+  VerifyPinResetResponse,
+  UssdLoginFormData,
+  UssdLoginResponse,
 } from './schemas';
 
 // Client library for calling the backend API
@@ -117,6 +124,16 @@ export const authApi = {
     }),
 
   /**
+   * POST /api/auth/ussd-login
+   * USSD login using phone and PIN (no OTP)
+   */
+  ussdLogin: (data: UssdLoginFormData) =>
+    apiCall<UssdLoginResponse>('/api/auth/ussd-login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
    * GET /api/auth/verify
    * Verify current JWT token validity
    */
@@ -131,6 +148,36 @@ export const authApi = {
    */
   sendOtp: (data: { identifier: string }) =>
     apiCall('/api/auth/send-otp', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * POST /api/auth/change-pin
+   * Change PIN (authenticated) - requires current PIN
+   */
+  changePin: (data: ChangePinFormData) =>
+    apiCall<ChangePinResponse>('/api/auth/change-pin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * POST /api/auth/reset-pin
+   * Request PIN reset OTP - sends OTP to phone via SMS
+   */
+  requestPinReset: (data: RequestPinResetFormData) =>
+    apiCall<RequestPinResetResponse>('/api/auth/reset-pin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  /**
+   * POST /api/auth/reset-pin/verify
+   * Verify OTP and reset PIN
+   */
+  verifyPinReset: (data: VerifyPinResetFormData) =>
+    apiCall<VerifyPinResetResponse>('/api/auth/reset-pin/verify', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
