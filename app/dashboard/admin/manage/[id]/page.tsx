@@ -16,6 +16,7 @@ import {
   Shield,
   Loader2,
   UserX,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -114,6 +115,35 @@ export default function MemberDetail({
     } catch (err) {
       console.error(err);
       toast.error("Failed to demote user");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const deleteUser = async () => {
+    if (!member) return;
+    
+    if (!confirm(`⚠️ WARNING: Are you sure you want to permanently delete ${member.firstName} ${member.lastName}? This action CANNOT be undone!`)) {
+      return;
+    }
+
+    // Double confirmation for safety
+    if (!confirm("This will delete ALL user data including accounts and transactions. Type DELETE to confirm (click OK to proceed)")) {
+      return;
+    }
+
+    setActionLoading(true);
+    try {
+      const res = await userApi.delete(member.id);
+      if (res.success) {
+        toast.success("✅ User deleted successfully");
+        router.push("/dashboard/admin/customers");
+      } else {
+        toast.error(res.error || "Failed to delete user");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete user");
     } finally {
       setActionLoading(false);
     }
@@ -425,6 +455,30 @@ export default function MemberDetail({
             >
               Back to List
             </button>
+
+            <button
+              onClick={deleteUser}
+              disabled={actionLoading}
+              className="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+            >
+              {actionLoading ? (
+                <>
+                  <Loader2 size={20} className="animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 size={20} />
+                  Delete User
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-800">
+              <strong>⚠️ Warning:</strong> Deleting a user will permanently remove all their data including accounts, transactions, and cannot be undone.
+            </p>
           </div>
         </div>
       </div>

@@ -169,6 +169,29 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  // Promote user to admin
+  makeAdmin: (data: {
+    email: string;
+    phone?: string;
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    userId?: string;
+  }) =>
+    apiCall('/api/auth/makeadmin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  // Demote admin to customer
+  demote: (data: { userId: string }) =>
+    apiCall('/api/auth/demote', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };
 
 // ========================================
@@ -206,15 +229,25 @@ export const dashboardApi = {
 };
 
 // ========================================
-// USER API
+// USER API (FULLY UPDATED WITH ALL ENDPOINTS)
 // ========================================
 export const userApi = {
+  /**
+   * GET /api/users
+   * List all registered users (admin only)
+   */
   getAll: () => apiCall('/api/users', { method: 'GET' }),
+  
+  /**
+   * GET /api/users/{id}
+   * Get a user by id (self or admin)
+   */
   getById: (userId: string) => apiCall(`/api/users/${userId}`, { method: 'GET' }),
-  promoteToAdmin: (userId: string) =>
-    apiCall(`/api/users/${userId}/promote`, { method: 'POST' }),
-  demoteToCustomer: (userId: string) =>
-    apiCall(`/api/users/${userId}/demote`, { method: 'POST' }),
+  
+  /**
+   * PUT /api/users/{id}
+   * Update a user (self or admin)
+   */
   update: (userId: string, data: {
     firstName?: string;
     lastName?: string;
@@ -224,13 +257,90 @@ export const userApi = {
     address?: string;
     city?: string;
     country?: string;
+    occupation?: string;
+    employer?: string;
+    nationalId?: string;
   }) =>
     apiCall(`/api/users/${userId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+  
+  /**
+   * DELETE /api/users/{id}
+   * Delete a user (admin only)
+   */
   delete: (userId: string) =>
     apiCall(`/api/users/${userId}`, { method: 'DELETE' }),
+  
+  /**
+   * PUT /api/users/{id}/bank-details
+   * Update bank details for a user's account (self or admin)
+   */
+  updateBankDetails: (userId: string, data: {
+    bankName?: string;
+    accountNumber?: string;
+    accountName?: string;
+    branchCode?: string;
+  }) =>
+    apiCall(`/api/users/${userId}/bank-details`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  
+  /**
+   * GET /api/users/user-names-by-phone
+   * Get a user's first and last name by phone number (public)
+   */
+  getUserNamesByPhone: (phone: string) =>
+    apiCall(`/api/users/user-names-by-phone?phone=${phone}`, { method: 'GET' }),
+  
+  /**
+   * Promote user to admin (uses POST /api/auth/makeadmin)
+   */
+  promoteToAdmin: async (userId: string) => {
+    try {
+      // First get user details
+      const userResponse = await userApi.getById(userId);
+      if (!userResponse.success || !userResponse.user) {
+        return { success: false, error: 'User not found' };
+      }
+
+      const user = userResponse.user;
+      
+      // Then promote to admin
+      const response = await authApi.makeAdmin({
+        userId: userId,
+        email: user.email,
+        phone: user.phone,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        dateOfBirth: user.dateOfBirth,
+        gender: user.gender,
+        address: user.address,
+        city: user.city,
+        country: user.country,
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error promoting user:', error);
+      return { success: false, error: 'Failed to promote user' };
+    }
+  },
+  
+  /**
+   * Demote admin to customer (uses POST /api/auth/demote)
+   */
+  demoteToCustomer: async (userId: string) => {
+    try {
+      const response = await authApi.demote({ userId });
+      return response;
+    } catch (error) {
+      console.error('Error demoting user:', error);
+      return { success: false, error: 'Failed to demote user' };
+    }
+  },
 };
 
 // ========================================
@@ -346,6 +456,7 @@ export const accountTypeApi = {
     lockInPeriodMonths?: number;
     allowWithdrawals?: boolean;
     allowLoans?: boolean;
+    active?: boolean;
     metadata?: any;
   }) =>
     apiCall('/api/account-types', {
@@ -376,13 +487,20 @@ export const accountTypeApi = {
 };
 
 // ========================================
+// TRANSACTIONS API
+// ========================================
+export const transactionsApi = {
+  /**
+   * GET /api/transactions
+   * Get all transactions (admin only)
+   */
+  getAll: () => apiCall('/api/transactions', { method: 'GET' }),
+};
+
+// ========================================
 // REPORTS API (UPDATED TO MATCH BACKEND)
 // ========================================
 export const reportsApi = {
-  /**
-   * POST /api/reports/generate-transaction
-   * Generate a transaction report PDF
-   */
   generateTransactionReport: async (data: {
     title: string;
     transactions: Array<{
@@ -410,10 +528,6 @@ export const reportsApi = {
     }
   },
 
-  /**
-   * POST /api/reports/generate-customer
-   * Generate a customer report PDF
-   */
   generateCustomerReport: async (data: {
     title: string;
     user: { 
@@ -441,10 +555,6 @@ export const reportsApi = {
     }
   },
 
-  /**
-   * GET /api/reports
-   * List all reports (returns array of reports)
-   */
   getAll: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/reports`, {
@@ -462,10 +572,6 @@ export const reportsApi = {
     }
   },
 
-  /**
-   * GET /api/reports/{id}
-   * Get a specific report by ID (includes full PDF base64 data)
-   */
   getById: async (reportId: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
@@ -483,10 +589,6 @@ export const reportsApi = {
     }
   },
 
-  /**
-   * DELETE /api/reports/{id}
-   * Delete a report
-   */
   delete: async (reportId: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
@@ -504,9 +606,6 @@ export const reportsApi = {
     }
   },
 
-  /**
-   * Download PDF from base64 data
-   */
   downloadPDF: (pdfBase64: string, fileName: string) => {
     try {
       const linkSource = `data:application/pdf;base64,${pdfBase64}`;
@@ -522,15 +621,11 @@ export const reportsApi = {
     }
   },
 
-  /**
-   * View PDF in new tab
-   */
   viewPDF: (pdfBase64: string) => {
     try {
       const blob = base64ToBlob(pdfBase64, 'application/pdf');
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
-      // Clean up after a delay
       setTimeout(() => URL.revokeObjectURL(url), 100);
     } catch (error) {
       console.error('Error viewing PDF:', error);
@@ -539,9 +634,6 @@ export const reportsApi = {
   },
 };
 
-/**
- * Helper function to convert base64 to Blob
- */
 function base64ToBlob(base64: string, contentType: string = ''): Blob {
   const byteCharacters = atob(base64);
   const byteArrays = [];
