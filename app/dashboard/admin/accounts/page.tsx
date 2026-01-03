@@ -1,11 +1,12 @@
+// File: /app/dashboard/admin/accounts/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import DashboardLayout from "@/app/dashboard/DashboardLayout";
-import { accountsApi, userApi } from "@/app/lib/api-client";
-import { Wallet, Search, Filter, Eye, AlertCircle, CheckCircle } from "lucide-react";
+import { accountsApi } from "@/app/lib/api-client";
+import { Wallet, Search, Eye, AlertCircle, CheckCircle, Plus } from "lucide-react";
 
 interface User {
   id: string;
@@ -48,7 +49,6 @@ export default function AdminAccountsPage() {
           }
         }
 
-        // Load all accounts (admin endpoint would return all users' accounts)
         const response = await accountsApi.getAll();
         
         if (response.success && response.accounts) {
@@ -74,7 +74,6 @@ export default function AdminAccountsPage() {
   useEffect(() => {
     let filtered = accounts;
 
-    // Apply search filter
     if (searchQuery) {
       filtered = filtered.filter(account => {
         const userName = `${account.user?.firstName || ''} ${account.user?.lastName || ''}`.toLowerCase();
@@ -86,7 +85,6 @@ export default function AdminAccountsPage() {
       });
     }
 
-    // Apply status filter
     if (statusFilter !== 'all') {
       filtered = filtered.filter(account => account.accountStatus === statusFilter);
     }
@@ -123,9 +121,18 @@ export default function AdminAccountsPage() {
     <DashboardLayout userType="admin" firstName={user?.firstName} lastName={user?.lastName}>
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Manage Pension Accounts</h1>
-          <p className="text-gray-600 mt-2">View and manage all user pension accounts</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Manage Pension Accounts</h1>
+            <p className="text-gray-600 mt-2">View and manage all user pension accounts</p>
+          </div>
+          <button
+            onClick={() => router.push('/dashboard/admin/accounts/create')}
+            className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-semibold shadow-lg"
+          >
+            <Plus size={20} />
+            Create Account
+          </button>
         </div>
 
         {/* Stats Cards */}
@@ -187,7 +194,14 @@ export default function AdminAccountsPage() {
           <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-12 text-center">
             <Wallet size={64} className="mx-auto text-gray-400 mb-4" />
             <h3 className="text-xl font-bold text-gray-900 mb-2">No Accounts Found</h3>
-            <p className="text-gray-600">No accounts match your search criteria</p>
+            <p className="text-gray-600 mb-6">No accounts match your search criteria</p>
+            <button
+              onClick={() => router.push('/dashboard/admin/accounts/create')}
+              className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-semibold"
+            >
+              <Plus size={20} />
+              Create First Account
+            </button>
           </div>
         ) : (
           <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg overflow-hidden">

@@ -1,5 +1,4 @@
-///home/hp/JERE/AutoNest/app/lib/api-client.ts
-
+// File: /app/lib/api-client.ts
 'use client';
 
 import type {
@@ -18,7 +17,6 @@ import type {
   UssdLoginResponse,
 } from './schemas';
 
-// Client library for calling the backend API
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 interface ApiResponse<T = any> {
@@ -28,7 +26,6 @@ interface ApiResponse<T = any> {
   [key: string]: any;
 }
 
-// Report interface
 interface Report {
   id: string;
   type: string;
@@ -39,7 +36,6 @@ interface Report {
   createdAt: string;
 }
 
-// Helper function to get token
 function getToken(): string | null {
   if (typeof window !== 'undefined') {
     return localStorage.getItem('auth_token');
@@ -58,7 +54,6 @@ export async function apiCall<T = any>(
     ...(options.headers as Record<string, string>),
   };
 
-  // Add auth token if available
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('auth_token');
     if (token) {
@@ -95,120 +90,52 @@ export async function apiCall<T = any>(
   }
 }
 
-// Auth API calls - Following documented auth flow
 export const authApi = {
-  /**
-   * POST /api/auth/register
-   * Initiates registration and M-Pesa payment
-   */
   register: (data: RegistrationFormData) =>
     apiCall<RegistrationInitResponse>('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * GET /api/auth/register/status/{transactionId}
-   * Polls payment status and completes registration
-   */
   getRegisterStatus: (transactionId: string) =>
-    apiCall<RegistrationStatusResponse>(
-      `/api/auth/register/status/${transactionId}`,
-      {
-        method: 'GET',
-      }
-    ),
-
-  /**
-   * POST /api/auth/login
-   * Step 1: Verify password and send OTP
-   */
+    apiCall<RegistrationStatusResponse>(`/api/auth/register/status/${transactionId}`, {
+      method: 'GET',
+    }),
   login: (data: { identifier: string; password: string }) =>
     apiCall<LoginResponse>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * POST /api/auth/login/otp
-   * Step 2: Verify OTP and complete login
-   * Optional newPassword required for first-time users (temporary password exchange)
-   */
-  loginOtp: (data: {
-    identifier: string;
-    otp: string;
-    newPassword?: string;
-  }) =>
+  loginOtp: (data: { identifier: string; otp: string; newPassword?: string }) =>
     apiCall<OtpVerificationResponse>('/api/auth/login/otp', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * POST /api/auth/ussd-login
-   * USSD login using phone and PIN (no OTP)
-   */
   ussdLogin: (data: UssdLoginFormData) =>
     apiCall<UssdLoginResponse>('/api/auth/ussd-login', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * GET /api/auth/verify
-   * Verify current JWT token validity
-   */
-  verify: () =>
-    apiCall('/api/auth/verify', {
-      method: 'GET',
-    }),
-
-  /**
-   * POST /api/auth/send-otp
-   * Send OTP to email (for resend functionality)
-   * @deprecated Use resendOtp instead
-   */
+  verify: () => apiCall('/api/auth/verify', { method: 'GET' }),
   sendOtp: (data: { identifier: string }) =>
     apiCall('/api/auth/send-otp', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * POST /api/auth/resend-otp
-   * Resend OTP to user's email and phone
-   * Validates user exists, OTP was previously generated, and OTP not expired
-   */
   resendOtp: (data: { identifier: string }) =>
     apiCall('/api/auth/resend-otp', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * POST /api/auth/change-pin
-   * Change PIN (authenticated) - requires current PIN
-   */
   changePin: (data: ChangePinFormData) =>
     apiCall<ChangePinResponse>('/api/auth/change-pin', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * POST /api/auth/reset-pin
-   * Request PIN reset OTP - sends OTP to phone via SMS
-   */
   requestPinReset: (data: RequestPinResetFormData) =>
     apiCall<RequestPinResetResponse>('/api/auth/reset-pin', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * POST /api/auth/reset-pin/verify
-   * Verify OTP and reset PIN
-   */
   verifyPinReset: (data: VerifyPinResetFormData) =>
     apiCall<VerifyPinResetResponse>('/api/auth/reset-pin/verify', {
       method: 'POST',
@@ -216,21 +143,8 @@ export const authApi = {
     }),
 };
 
-// Terms and Conditions API calls
 export const termsApi = {
-  /**
-   * GET /api/terms-and-conditions
-   * Get current terms and conditions
-   */
-  getCurrent: () =>
-    apiCall('/api/terms-and-conditions', {
-      method: 'GET',
-    }),
-
-  /**
-   * PUT /api/terms-and-conditions
-   * Update terms and conditions (Admin only)
-   */
+  getCurrent: () => apiCall('/api/terms-and-conditions', { method: 'GET' }),
   update: (data: { body: string }) =>
     apiCall('/api/terms-and-conditions', {
       method: 'PUT',
@@ -238,77 +152,32 @@ export const termsApi = {
     }),
 };
 
-// Payment API calls
 export const paymentApi = {
-  initiate: (data: {
-    amount: number;
-    planId?: string;
-    description?: string;
-  }) =>
+  initiate: (data: { amount: number; planId?: string; description?: string }) =>
     apiCall('/api/payment/initiate', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
   getStatus: (transactionId: string) =>
-    apiCall(`/api/payment/status/${transactionId}`, {
-      method: 'GET',
-    }),
+    apiCall(`/api/payment/status/${transactionId}`, { method: 'GET' }),
 };
 
-// Dashboard API calls
 export const dashboardApi = {
-  getUser: () =>
-    apiCall('/api/dashboard/user', {
-      method: 'GET',
-    }),
-
-  getTransactions: () =>
-    apiCall('/api/dashboard/transactions', {
-      method: 'GET',
-    }),
-
-  getStats: () =>
-    apiCall('/api/dashboard/stats', {
-      method: 'GET',
-    }),
+  getUser: () => apiCall('/api/dashboard/user', { method: 'GET' }),
+  getTransactions: () => apiCall('/api/dashboard/transactions', { method: 'GET' }),
+  getStats: () => apiCall('/api/dashboard/stats', { method: 'GET' }),
 };
 
-// User API calls
 export const userApi = {
-  /**
-   * GET /api/users
-   * Get all users (Admin only)
-   */
-  getAll: () =>
-    apiCall('/api/users', {
-      method: 'GET',
-    }),
-    
-  getById: (userId: string) =>
-    apiCall(`/api/users/${userId}`, {
-      method: 'GET',
-    }),
-    
+  getAll: () => apiCall('/api/users', { method: 'GET' }),
+  getById: (userId: string) => apiCall(`/api/users/${userId}`, { method: 'GET' }),
   promoteToAdmin: (userId: string) =>
-    apiCall(`/api/users/${userId}/promote`, {
-      method: 'POST',
-    }),
-    
+    apiCall(`/api/users/${userId}/promote`, { method: 'POST' }),
   demoteToCustomer: (userId: string) =>
-    apiCall(`/api/users/${userId}/demote`, {
-      method: 'POST',
-    }),
+    apiCall(`/api/users/${userId}/demote`, { method: 'POST' }),
 };
 
-// 🆕 Admin API calls (ADMIN ONLY)
 export const adminApi = {
-  /**
-   * POST /api/auth/makeadmin
-   * Create new admin user or promote existing customer to admin (Admin only - no payment required)
-   * Creating new admin requires: email, phone, firstName, lastName
-   * Promoting existing user accepts: email OR userId
-   */
   createAdmin: (data: {
     email: string;
     phone?: string;
@@ -319,56 +188,43 @@ export const adminApi = {
     address?: string;
     city?: string;
     country?: string;
-    userId?: string; // For promoting existing user
+    userId?: string;
   }) =>
     apiCall('/api/auth/makeadmin', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * GET /api/admin/list
-   * Get all admin users (Admin only)
-   */
-  listAdmins: () =>
-    apiCall('/api/admin/list', {
-      method: 'GET',
-    }),
+  listAdmins: () => apiCall('/api/admin/list', { method: 'GET' }),
 };
 
-// 🆕 ACCOUNTS API - Pension Account Management
+// 🆕 UPDATED ACCOUNTS API
 export const accountsApi = {
+  getAll: () => apiCall('/api/accounts', { method: 'GET' }),
+  getById: (id: string) => apiCall(`/api/accounts/${id}`, { method: 'GET' }),
+  getSummary: (id: string) => apiCall(`/api/accounts/${id}/summary`, { method: 'GET' }),
+  
   /**
-   * GET /api/accounts
-   * List all accounts for the current user
+   * 🆕 POST /api/accounts/create
+   * Create a new pension account for a user (Admin only)
+   * NOTE: This endpoint must be added to your backend!
    */
-  getAll: () =>
-    apiCall('/api/accounts', {
-      method: 'GET',
+  create: (data: {
+    userId: string;
+    accountTypeId: string;
+    initialBalance?: number;
+  }) =>
+    apiCall('/api/accounts/create', {
+      method: 'POST',
+      body: JSON.stringify(data),
     }),
 
   /**
-   * GET /api/accounts/{id}
-   * Get account details
+   * 🆕 GET /api/accounts/user/{userId}
+   * Get all accounts for a specific user (Admin only)
    */
-  getById: (id: string) =>
-    apiCall(`/api/accounts/${id}`, {
-      method: 'GET',
-    }),
+  getByUserId: (userId: string) =>
+    apiCall(`/api/accounts/user/${userId}`, { method: 'GET' }),
 
-  /**
-   * GET /api/accounts/{id}/summary
-   * Get account summary with all balances
-   */
-  getSummary: (id: string) =>
-    apiCall(`/api/accounts/${id}/summary`, {
-      method: 'GET',
-    }),
-
-  /**
-   * POST /api/accounts/{id}/contribution
-   * Add contribution to account
-   */
   addContribution: (id: string, data: {
     employeeAmount: number;
     employerAmount: number;
@@ -379,12 +235,6 @@ export const accountsApi = {
       body: JSON.stringify(data),
     }),
 
-  /**
-   * POST /api/accounts/{accountNumber}/deposit
-   * Deposit funds to an account (initiates M-Pesa STK Push)
-   * @param accountNumber - 8-digit account number (e.g., "00000001")
-   * @param data - Deposit details including amount, phone, and description
-   */
   deposit: (accountNumber: string, data: {
     amount: number;
     phone: string;
@@ -395,10 +245,6 @@ export const accountsApi = {
       body: JSON.stringify(data),
     }),
 
-  /**
-   * POST /api/accounts/{id}/withdraw
-   * Withdraw funds from account
-   */
   withdraw: (id: string, data: {
     amount: number;
     withdrawalType: string;
@@ -409,10 +255,6 @@ export const accountsApi = {
       body: JSON.stringify(data),
     }),
 
-  /**
-   * POST /api/accounts/{id}/earnings
-   * Add earnings to account (interest, investment returns, dividends)
-   */
   addEarnings: (id: string, data: {
     type: 'interest' | 'investment' | 'dividend';
     amount: number;
@@ -423,10 +265,6 @@ export const accountsApi = {
       body: JSON.stringify(data),
     }),
 
-  /**
-   * PUT /api/accounts/{id}/status
-   * Update account status
-   */
   updateStatus: (id: string, data: {
     accountStatus: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   }) =>
@@ -436,30 +274,9 @@ export const accountsApi = {
     }),
 };
 
-// Account Types API calls (ADMIN ONLY)
 export const accountTypeApi = {
-  /**
-   * GET /api/account-types
-   * Get all account types
-   */
-  getAll: () =>
-    apiCall('/api/account-types', {
-      method: 'GET',
-    }),
-
-  /**
-   * GET /api/account-types/:id
-   * Get single account type
-   */
-  getById: (id: string) =>
-    apiCall(`/api/account-types/${id}`, {
-      method: 'GET',
-    }),
-
-  /**
-   * POST /api/account-types
-   * Create new account type (Admin only)
-   */
+  getAll: () => apiCall('/api/account-types', { method: 'GET' }),
+  getById: (id: string) => apiCall(`/api/account-types/${id}`, { method: 'GET' }),
   create: (data: {
     name: string;
     description: string;
@@ -476,11 +293,6 @@ export const accountTypeApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * PUT /api/account-types/:id
-   * Update account type (Admin only)
-   */
   update: (id: string, data: Partial<{
     name: string;
     description: string;
@@ -497,23 +309,10 @@ export const accountTypeApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
-
-  /**
-   * DELETE /api/account-types/:id
-   * Delete account type (Admin only)
-   */
-  delete: (id: string) =>
-    apiCall(`/api/account-types/${id}`, {
-      method: 'DELETE',
-    }),
+  delete: (id: string) => apiCall(`/api/account-types/${id}`, { method: 'DELETE' }),
 };
 
-// 🆕 Reports API - Report Generation and Management
 export const reportsApi = {
-  /**
-   * POST /api/reports/generate-transaction
-   * Generate transaction report
-   */
   generateTransactionReport: async (data: {
     title: string;
     transactions: Array<{
@@ -539,19 +338,9 @@ export const reportsApi = {
       return { success: false, error: 'Failed to generate transaction report' };
     }
   },
-
-  /**
-   * POST /api/reports/generate-customer
-   * Generate customer report
-   */
   generateCustomerReport: async (data: {
     title: string;
-    user: {
-      id: string;
-      email: string;
-      firstName?: string;
-      lastName?: string;
-    };
+    user: { id: string; email: string; firstName?: string; lastName?: string };
     transactions: Array<any>;
   }) => {
     try {
@@ -569,17 +358,10 @@ export const reportsApi = {
       return { success: false, error: 'Failed to generate customer report' };
     }
   },
-
-  /**
-   * GET /api/reports
-   * List all reports
-   */
   getAll: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/reports`, {
-        headers: {
-          'Authorization': `Bearer ${getToken()}`,
-        },
+        headers: { 'Authorization': `Bearer ${getToken()}` },
       });
       return await response.json();
     } catch (error) {
@@ -587,17 +369,10 @@ export const reportsApi = {
       return { success: false, error: 'Failed to fetch reports' };
     }
   },
-
-  /**
-   * GET /api/reports/{reportId}
-   * Get report by ID
-   */
   getById: async (reportId: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
-        headers: {
-          'Authorization': `Bearer ${getToken()}`,
-        },
+        headers: { 'Authorization': `Bearer ${getToken()}` },
       });
       return await response.json();
     } catch (error) {
@@ -605,18 +380,11 @@ export const reportsApi = {
       return { success: false, error: 'Failed to fetch report' };
     }
   },
-
-  /**
-   * DELETE /api/reports/{reportId}
-   * Delete report
-   */
   delete: async (reportId: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${getToken()}`,
-        },
+        headers: { 'Authorization': `Bearer ${getToken()}` },
       });
       return await response.json();
     } catch (error) {
@@ -624,11 +392,6 @@ export const reportsApi = {
       return { success: false, error: 'Failed to delete report' };
     }
   },
-
-  /**
-   * Download PDF from base64
-   * Utility function to download PDF reports
-   */
   downloadPDF: (pdfBase64: string, fileName: string) => {
     try {
       const linkSource = `data:application/pdf;base64,${pdfBase64}`;
@@ -643,7 +406,6 @@ export const reportsApi = {
   },
 };
 
-// Health check
 export const healthApi = {
   check: () => apiCall('/api/health'),
 };
