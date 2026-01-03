@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/dashboard/layout.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -50,7 +49,7 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
-      {/* Sidebar - Fixed on desktop, PERSISTS across navigation */}
+      {/* Sidebar - Fixed on desktop, slides in/out on mobile */}
       <Sidebar
         userType={userType}
         firstName={user?.firstName}

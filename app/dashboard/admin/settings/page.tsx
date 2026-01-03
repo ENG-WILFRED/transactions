@@ -1,9 +1,11 @@
+// File: /app/dashboard/admin/settings/page.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
 import DashboardLayout from "@/app/dashboard/DashboardLayout";
 import ChangePinForm from '@/app/components/ChangePinForm';
-import { Settings, Lock, Bell, User, Save, Shield } from 'lucide-react';
+import ChangePasswordForm from '@/app/components/ChangePasswordForm';
+import { Settings, Lock, Bell, User, Save, Shield, Key } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminSettings() {
@@ -151,19 +153,31 @@ export default function AdminSettings() {
 
           {activeTab === 'security' && (
             <div className="space-y-6">
+              {/* Change Password */}
+              <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-6 sm:p-8">
+                <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <Key size={24} />
+                  Change Password
+                </h2>
+                <p className="text-sm text-gray-600 mb-6">Update your account password</p>
+
+                <ChangePasswordForm />
+              </div>
+
+              {/* Change PIN */}
               <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-6 sm:p-8">
                 <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
                   <Lock size={24} />
-                  Security Settings
+                  Change PIN
                 </h2>
-                <p className="text-sm text-gray-600 mb-6">Manage your account security and PIN</p>
+                <p className="text-sm text-gray-600 mb-6">Update your 4-digit security PIN</p>
 
                 <ChangePinForm />
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <p className="text-sm text-blue-900">
-                  <strong>Forgot your PIN?</strong> Visit the <a href="/reset-pin" className="underline font-semibold hover:text-blue-700">PIN Reset page</a> to reset it via SMS OTP.
+                  <strong>Security Tips:</strong> Use a strong, unique password and change it regularly. Never share your password or PIN with anyone.
                 </p>
               </div>
             </div>

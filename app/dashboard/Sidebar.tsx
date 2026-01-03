@@ -1,4 +1,3 @@
-//home/hp/JERE/AutoNest/app/dashboard/Sidebar.tsx
 "use client";
 
 import { useState } from "react";
@@ -77,6 +76,11 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
       href: "/dashboard/admin/account-types",
     },
     {
+      name: "Profile",
+      icon: User,
+      href: "/dashboard/profile",
+    },
+    {
       name: "Settings",
       icon: Settings,
       href: "/dashboard/admin/settings",
@@ -118,7 +122,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
     {
       name: "Profile",
       icon: User,
-      href: "/dashboard/customer/profile",
+      href: "/dashboard/profile",
     },
     {
       name: "Settings",
@@ -135,7 +139,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
       <div className="p-6 border-b border-gray-700">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
-            {firstName?.[0]?.toUpperCase() || "U"}
+            {firstName?.[0]?.toUpperCase() || lastName?.[0]?.toUpperCase() || "U"}
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-white text-sm">

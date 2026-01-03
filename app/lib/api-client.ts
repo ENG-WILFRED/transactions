@@ -144,6 +144,26 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    apiCall('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  forgotPassword: (data: { identifier: string }) =>
+    apiCall('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  verifyForgotPassword: (data: { identifier: string; otp: string; newPassword: string }) =>
+    apiCall('/api/auth/forgot-password/verify', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  setPassword: (data: { password: string }) =>
+    apiCall('/api/auth/set-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };
 
 // ========================================

@@ -1,8 +1,12 @@
-///home/hp/JERE/AutoNest/app/dashboard/DashboardLayout.tsx
 "use client";
 
-// THIS COMPONENT IS NO LONGER NEEDED - layout.tsx handles everything
-// Keep it for backwards compatibility but it just renders children
+/**
+ * DEPRECATED: This component is no longer needed.
+ * Layout functionality has been moved to /app/dashboard/layout.tsx
+ * 
+ * This file is kept for backwards compatibility only.
+ * Any component still importing this will just render its children.
+ */
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
