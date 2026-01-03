@@ -96,6 +96,7 @@ export default function CustomerDashboard() {
         }
 
         setLoadingTransactions(true);
+        
         const transactionsResponse = await dashboardApi.getTransactions();
         if (transactionsResponse.success && transactionsResponse.transactions) {
           setTransactions(transactionsResponse.transactions);

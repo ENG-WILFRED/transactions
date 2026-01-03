@@ -380,15 +380,17 @@ export const accountsApi = {
     }),
 
   /**
-   * POST /api/accounts/{id}/deposit
+   * POST /api/accounts/{accountNumber}/deposit
    * Deposit funds to an account (initiates M-Pesa STK Push)
+   * @param accountNumber - 8-digit account number (e.g., "00000001")
+   * @param data - Deposit details including amount, phone, and description
    */
-  deposit: (id: string, data: {
+  deposit: (accountNumber: string, data: {
     amount: number;
     phone: string;
     description?: string;
   }) =>
-    apiCall(`/api/accounts/${id}/deposit`, {
+    apiCall(`/api/accounts/${accountNumber}/deposit`, {
       method: 'POST',
       body: JSON.stringify(data),
     }),
