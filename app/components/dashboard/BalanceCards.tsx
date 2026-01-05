@@ -1,4 +1,4 @@
-///home/hp/JERE/AutoNest/app/components/dashboard/BalanceCards.tsx
+///app/components/dashboard/BalanceCards.tsx
 import { Wallet, ArrowDownRight, TrendingUp, Clock } from 'lucide-react';
 
 interface BalanceCardsProps {
@@ -54,9 +54,11 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
   const yearsToRetirement = calculateYearsToRetirement();
   const totalBalance = calculateTotalBalance();
   const projectedAt65 = Math.round(totalBalance * Math.pow(1.08, yearsToRetirement));
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl shadow-lg p-6">
+      {/* Total Balance - Blue/Indigo stays same in both modes */}
+      <div className="bg-gradient-to-br from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-2xl shadow-lg p-6 transition-colors duration-300">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-sm font-semibold opacity-90">Total Balance</h4>
           <Wallet size={20} className="opacity-75" />
@@ -65,7 +67,8 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
         <p className="text-indigo-100 text-xs mt-2">Across all plans</p>
       </div>
 
-      <div className="bg-gradient-to-br from-green-600 to-emerald-600 text-white rounded-2xl shadow-lg p-6">
+      {/* Monthly Contribution - Green/Emerald stays same */}
+      <div className="bg-gradient-to-br from-green-600 to-emerald-600 dark:from-green-700 dark:to-emerald-700 text-white rounded-2xl shadow-lg p-6 transition-colors duration-300">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-sm font-semibold opacity-90">Monthly Contribution</h4>
           <ArrowDownRight size={20} className="opacity-75" />
@@ -74,7 +77,8 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
         <p className="text-emerald-100 text-xs mt-2">Total allocated</p>
       </div>
 
-      <div className="bg-gradient-to-br from-purple-600 to-pink-600 text-white rounded-2xl shadow-lg p-6">
+      {/* Projected at Retirement - Purple/Pink stays same */}
+      <div className="bg-gradient-to-br from-purple-600 to-pink-600 dark:from-purple-700 dark:to-pink-700 text-white rounded-2xl shadow-lg p-6 transition-colors duration-300">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-sm font-semibold opacity-90">Projected @ {user?.retirementAge || 65}</h4>
           <TrendingUp size={20} className="opacity-75" />
@@ -83,7 +87,8 @@ export default function BalanceCards({ balance, totalContributions, projectedRet
         <p className="text-pink-100 text-xs mt-2">8% annual growth</p>
       </div>
 
-      <div className="bg-gradient-to-br from-orange-600 to-red-600 text-white rounded-2xl shadow-lg p-6">
+      {/* Years to Retirement - Orange/Red stays same */}
+      <div className="bg-gradient-to-br from-orange-600 to-red-600 dark:from-orange-700 dark:to-red-700 text-white rounded-2xl shadow-lg p-6 transition-colors duration-300">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-sm font-semibold opacity-90">Years to Retirement</h4>
           <Clock size={20} className="opacity-75" />

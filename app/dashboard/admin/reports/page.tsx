@@ -1,4 +1,4 @@
-///home/hp/JERE/AutoNest/app/dashboard/admin/reports/page.tsx
+///app/dashboard/admin/reports/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -125,7 +125,6 @@ export default function AdminReportsPage() {
           toast.error(response.error || 'Failed to generate report');
         }
       } else {
-        // Customer report
         const targetUserId = selectedUserId || localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).id : null;
         
         if (!targetUserId) {
@@ -172,7 +171,6 @@ export default function AdminReportsPage() {
 
   const handleView = async (report: Report) => {
     try {
-      // If we don't have the full PDF data, fetch it
       if (!report.pdfBase64) {
         const response = await reportsApi.getById(report.id);
         if (response.success && response.data) {
@@ -193,7 +191,6 @@ export default function AdminReportsPage() {
     try {
       toast.info('📥 Downloading report...');
       
-      // If we don't have the PDF data, fetch it first
       let pdfData = report.pdfBase64;
       if (!pdfData) {
         const response = await reportsApi.getById(report.id);
@@ -254,8 +251,8 @@ export default function AdminReportsPage() {
 
   if (loading && !user) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-gray-900 transition-colors duration-300">
+        <Loader2 className="w-12 h-12 animate-spin text-indigo-600 dark:text-indigo-400" />
       </div>
     );
   }
@@ -263,21 +260,21 @@ export default function AdminReportsPage() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-3">
               <FileText size={32} />
               Reports Management
             </h1>
-            <p className="text-indigo-100 mt-2">
+            <p className="text-indigo-100 dark:text-indigo-200 mt-2 transition-colors duration-300">
               Generate, view, and manage system-wide reports
             </p>
           </div>
           <button
             onClick={loadReports}
             disabled={loading}
-            className="flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl hover:bg-indigo-50 transition font-semibold shadow-lg disabled:opacity-50"
+            className="flex items-center gap-2 bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 px-6 py-3 rounded-xl hover:bg-indigo-50 dark:hover:bg-gray-700 transition font-semibold shadow-lg disabled:opacity-50"
           >
             <RefreshCw size={20} className={loading ? "animate-spin" : ""} />
             Refresh
@@ -286,16 +283,16 @@ export default function AdminReportsPage() {
       </div>
 
       {/* Generate Reports Section */}
-      <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Plus size={24} className="text-indigo-600" />
+      <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-6 transition-colors duration-300">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+          <Plus size={24} className="text-indigo-600 dark:text-indigo-400" />
           Generate New Report
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             onClick={() => openGenerateModal("transaction")}
-            className="flex flex-col items-center gap-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl hover:from-blue-600 hover:to-blue-700 transition shadow-lg"
+            className="flex flex-col items-center gap-3 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white p-6 rounded-xl hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 transition shadow-lg"
           >
             <Receipt size={48} />
             <span className="font-semibold text-lg">Transaction Report</span>
@@ -306,7 +303,7 @@ export default function AdminReportsPage() {
 
           <button
             onClick={() => openGenerateModal("customer")}
-            className="flex flex-col items-center gap-3 bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-xl hover:from-purple-600 hover:to-purple-700 transition shadow-lg"
+            className="flex flex-col items-center gap-3 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 text-white p-6 rounded-xl hover:from-purple-600 hover:to-purple-700 dark:hover:from-purple-700 dark:hover:to-purple-800 transition shadow-lg"
           >
             <User size={48} />
             <span className="font-semibold text-lg">Customer Report</span>
@@ -318,7 +315,7 @@ export default function AdminReportsPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg p-6">
+      <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
         <div className="relative">
           <Search
             size={20}
@@ -329,19 +326,19 @@ export default function AdminReportsPage() {
             placeholder="Search reports by title, type, or filename..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-300"
           />
         </div>
       </div>
 
       {/* Reports Grid */}
       {filteredReports.length === 0 ? (
-        <div className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-12 text-center">
-          <FileText size={64} className="mx-auto text-gray-300 mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-12 text-center transition-colors duration-300">
+          <FileText size={64} className="mx-auto text-gray-300 dark:text-gray-600 mb-4 transition-colors duration-300" />
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
             {searchTerm ? "No reports found" : "No reports yet"}
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-400 mb-6 transition-colors duration-300">
             {searchTerm
               ? "Try adjusting your search terms"
               : "Generate your first report to get started"}
@@ -349,7 +346,7 @@ export default function AdminReportsPage() {
           {!searchTerm && (
             <button
               onClick={() => setShowGenerateModal(true)}
-              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+              className="px-6 py-3 bg-indigo-600 dark:bg-indigo-700 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition"
             >
               Generate Report
             </button>
@@ -360,24 +357,24 @@ export default function AdminReportsPage() {
           {filteredReports.map((report) => (
             <div
               key={report.id}
-              className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-xl shadow-lg p-6 hover:shadow-xl transition"
+              className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   {report.type === "transaction" ? (
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Receipt className="text-blue-600" size={24} />
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center transition-colors duration-300">
+                      <Receipt className="text-blue-600 dark:text-blue-400" size={24} />
                     </div>
                   ) : (
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <User className="text-purple-600" size={24} />
+                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center transition-colors duration-300">
+                      <User className="text-purple-600 dark:text-purple-400" size={24} />
                     </div>
                   )}
                   <div>
-                    <h3 className="font-semibold text-gray-900 text-sm">
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm transition-colors duration-300">
                       {report.title}
                     </h3>
-                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1 transition-colors duration-300">
                       <Calendar size={12} />
                       {new Date(report.createdAt).toLocaleDateString()}
                     </p>
@@ -385,7 +382,7 @@ export default function AdminReportsPage() {
                 </div>
               </div>
 
-              <p className="text-xs text-gray-600 mb-4">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-4 transition-colors duration-300">
                 {report.type === "customer"
                   ? "Customer Account Report"
                   : "Transaction History"}
@@ -394,7 +391,7 @@ export default function AdminReportsPage() {
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => handleView(report)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-xs"
+                  className="flex items-center justify-center gap-1 px-3 py-2 bg-indigo-600 dark:bg-indigo-700 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition text-xs"
                   title="View Report"
                 >
                   <Eye size={14} />
@@ -402,7 +399,7 @@ export default function AdminReportsPage() {
                 </button>
                 <button
                   onClick={() => handleDownload(report)}
-                  className="flex items-center justify-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-xs"
+                  className="flex items-center justify-center gap-1 px-3 py-2 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition text-xs"
                   title="Download Report"
                 >
                   <Download size={14} />
@@ -410,7 +407,7 @@ export default function AdminReportsPage() {
                 </button>
                 <button
                   onClick={() => handleDelete(report.id)}
-                  className="flex items-center justify-center px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
+                  className="flex items-center justify-center px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition"
                   title="Delete Report"
                 >
                   <Trash2 size={14} />
@@ -424,23 +421,23 @@ export default function AdminReportsPage() {
       {/* Generate Report Modal */}
       {showGenerateModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transition-colors duration-300">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
                 Generate {reportType === "transaction" ? "Transaction" : "Customer"} Report
               </h2>
               <button
                 onClick={() => setShowGenerateModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
               >
-                <X size={20} />
+                <X size={20} className="text-gray-600 dark:text-gray-400" />
               </button>
             </div>
 
             <div className="space-y-4">
               {reportType === "customer" && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
                     Select Customer <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -451,7 +448,7 @@ export default function AdminReportsPage() {
                     <select
                       value={selectedUserId}
                       onChange={(e) => setSelectedUserId(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-300"
                       required
                     >
                       <option value="">Select a customer</option>
@@ -467,7 +464,7 @@ export default function AdminReportsPage() {
 
               {reportType === "transaction" && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
                     Select User (Optional)
                   </label>
                   <div className="relative">
@@ -478,7 +475,7 @@ export default function AdminReportsPage() {
                     <select
                       value={selectedUserId}
                       onChange={(e) => setSelectedUserId(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors duration-300"
                     >
                       <option value="">All Users</option>
                       {users.map((user) => (
@@ -488,16 +485,16 @@ export default function AdminReportsPage() {
                       ))}
                     </select>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-300">
                     Leave empty to generate report for all users
                   </p>
                 </div>
               )}
 
               {generating && (
-                <div className="p-4 bg-blue-50 rounded-lg flex items-center gap-3">
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
-                  <p className="text-sm text-blue-900">Generating report...</p>
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center gap-3 transition-colors duration-300">
+                  <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-blue-400" />
+                  <p className="text-sm text-blue-900 dark:text-blue-200 transition-colors duration-300">Generating report...</p>
                 </div>
               )}
 
@@ -505,14 +502,14 @@ export default function AdminReportsPage() {
                 <button
                   onClick={() => setShowGenerateModal(false)}
                   disabled={generating}
-                  className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-semibold disabled:opacity-50"
+                  className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition font-semibold disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleGenerateReport}
                   disabled={generating || (reportType === "customer" && !selectedUserId)}
-                  className="flex-1 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 bg-indigo-600 dark:bg-indigo-700 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {generating ? (
                     <>
@@ -535,27 +532,27 @@ export default function AdminReportsPage() {
       {/* View Report Modal */}
       {viewingReport && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-6xl w-full h-[90vh] flex flex-col transition-colors duration-300">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
                   {viewingReport.title}
                 </h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 transition-colors duration-300">
                   {viewingReport.fileName}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleDownload(viewingReport)}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition"
                 >
                   <Download size={16} />
                   Download
                 </button>
                 <button
                   onClick={() => setViewingReport(null)}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
                 >
                   Close
                 </button>

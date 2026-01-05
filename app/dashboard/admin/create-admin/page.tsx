@@ -1,4 +1,4 @@
-///home/hp/JERE/AutoNest/app/dashboard/admin/create-admin/page.tsx
+///app/dashboard/admin/create-admin/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -40,7 +40,6 @@ export default function CreateAdminPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user types
     if (errors[name as keyof CreateAdminFormData]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -49,7 +48,6 @@ export default function CreateAdminPage() {
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof CreateAdminFormData, string>> = {};
 
-    // Required fields
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
@@ -124,19 +122,19 @@ export default function CreateAdminPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <Link
             href="/dashboard/admin"
-            className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium mb-4"
+            className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium mb-4 transition-colors duration-300"
           >
             <ArrowLeft size={20} />
             Back to Admin Dashboard
           </Link>
 
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl shadow-lg p-6 sm:p-8">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-white/20 rounded-xl">
                 <UserPlus size={32} />
@@ -150,17 +148,17 @@ export default function CreateAdminPage() {
         </div>
 
         {/* Info Banner */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6 transition-colors duration-300">
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <UserPlus size={20} className="text-blue-600" />
+            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <UserPlus size={20} className="text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-blue-900">Admin Account Creation</h3>
-              <p className="text-sm text-blue-700 mt-1">
+              <h3 className="font-semibold text-blue-900 dark:text-blue-200 transition-colors duration-300">Admin Account Creation</h3>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1 transition-colors duration-300">
                 This will create a new admin account with full system access. The system will automatically generate a temporary password and send it to the admin's email and phone.
               </p>
-              <ul className="text-xs text-blue-600 mt-2 space-y-1 list-disc list-inside">
+              <ul className="text-xs text-blue-600 dark:text-blue-400 mt-2 space-y-1 list-disc list-inside transition-colors duration-300">
                 <li>No payment required for admin accounts</li>
                 <li>Automatically assigned 'admin' role</li>
                 <li>Account activated immediately</li>
@@ -171,19 +169,19 @@ export default function CreateAdminPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl p-6 sm:p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl p-6 sm:p-8 space-y-6 transition-colors duration-300">
           
           {/* Basic Information */}
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <User size={20} className="text-indigo-600" />
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+              <User size={20} className="text-indigo-600 dark:text-indigo-400" />
               Basic Information
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* First Name */}
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -192,7 +190,7 @@ export default function CreateAdminPage() {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  className={`w-full px-4 py-3 border ${errors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300`}
                   placeholder="John"
                 />
                 {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
@@ -200,7 +198,7 @@ export default function CreateAdminPage() {
 
               {/* Last Name */}
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -209,7 +207,7 @@ export default function CreateAdminPage() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  className={`w-full px-4 py-3 border ${errors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300`}
                   placeholder="Doe"
                 />
                 {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
@@ -219,15 +217,15 @@ export default function CreateAdminPage() {
 
           {/* Contact Information */}
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Mail size={20} className="text-indigo-600" />
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+              <Mail size={20} className="text-indigo-600 dark:text-indigo-400" />
               Contact Information
             </h2>
 
             <div className="space-y-4">
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   Email Address <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -240,7 +238,7 @@ export default function CreateAdminPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                    className={`w-full pl-10 pr-4 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300`}
                     placeholder="admin@example.com"
                   />
                 </div>
@@ -249,7 +247,7 @@ export default function CreateAdminPage() {
 
               {/* Phone */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -262,27 +260,27 @@ export default function CreateAdminPage() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                    className={`w-full pl-10 pr-4 py-3 border ${errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300`}
                     placeholder="+254712345678"
                   />
                 </div>
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-                <p className="text-xs text-gray-500 mt-1">Kenyan number format: +254712345678</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-300">Kenyan number format: +254712345678</p>
               </div>
             </div>
           </div>
 
           {/* Optional Information */}
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <IdCard size={20} className="text-indigo-600" />
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
+              <IdCard size={20} className="text-indigo-600 dark:text-indigo-400" />
               Additional Information (Optional)
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Gender */}
               <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   Gender
                 </label>
                 <select
@@ -290,7 +288,7 @@ export default function CreateAdminPage() {
                   name="gender"
                   value={formData.gender || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
                 >
                   <option value="">Select gender</option>
                   <option value="Male">Male</option>
@@ -301,7 +299,7 @@ export default function CreateAdminPage() {
 
               {/* Date of Birth */}
               <div>
-                <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   Date of Birth
                 </label>
                 <div className="relative">
@@ -315,14 +313,14 @@ export default function CreateAdminPage() {
                     value={formData.dateOfBirth || ''}
                     onChange={handleChange}
                     max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
                   />
                 </div>
               </div>
 
               {/* Address */}
               <div className="sm:col-span-2">
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   Address
                 </label>
                 <input
@@ -331,14 +329,14 @@ export default function CreateAdminPage() {
                   name="address"
                   value={formData.address || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
                   placeholder="123 Main Street"
                 />
               </div>
 
               {/* City */}
               <div>
-                <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   City
                 </label>
                 <input
@@ -347,14 +345,14 @@ export default function CreateAdminPage() {
                   name="city"
                   value={formData.city || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
                   placeholder="Nairobi"
                 />
               </div>
 
               {/* Country */}
               <div>
-                <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-300">
                   Country
                 </label>
                 <input
@@ -363,7 +361,7 @@ export default function CreateAdminPage() {
                   name="country"
                   value={formData.country || ''}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
                   placeholder="Kenya"
                 />
               </div>
@@ -376,14 +374,14 @@ export default function CreateAdminPage() {
               type="button"
               onClick={() => router.back()}
               disabled={loading}
-              className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-xl font-semibold hover:shadow-lg disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -401,12 +399,12 @@ export default function CreateAdminPage() {
         </form>
 
         {/* Security Notice */}
-        <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+        <div className="mt-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 transition-colors duration-300">
           <div className="flex items-start gap-3">
-            <Lock size={20} className="text-yellow-600 mt-0.5" />
+            <Lock size={20} className="text-yellow-600 dark:text-yellow-400 mt-0.5" />
             <div className="flex-1">
-              <h3 className="font-semibold text-yellow-900 text-sm">Security Notice</h3>
-              <p className="text-xs text-yellow-700 mt-1">
+              <h3 className="font-semibold text-yellow-900 dark:text-yellow-200 text-sm transition-colors duration-300">Security Notice</h3>
+              <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1 transition-colors duration-300">
                 The system will automatically generate a secure temporary password and send it to the admin's email and phone. The admin will be required to change this password on their first login. Admin users have full system access.
               </p>
             </div>

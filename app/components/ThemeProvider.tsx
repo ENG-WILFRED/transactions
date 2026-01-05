@@ -8,26 +8,28 @@ type Theme = "light" | "dark";
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+  setTheme: (theme: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
-  // Load theme from localStorage on mount
+  // Initialize theme on mount
   useEffect(() => {
+    // Check localStorage first
     const savedTheme = localStorage.getItem("theme") as Theme | null;
     
     if (savedTheme === "dark" || savedTheme === "light") {
-      setTheme(savedTheme);
+      setThemeState(savedTheme);
       applyTheme(savedTheme);
     } else {
       // Check system preference
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       const initialTheme = prefersDark ? "dark" : "light";
-      setTheme(initialTheme);
+      setThemeState(initialTheme);
       applyTheme(initialTheme);
       localStorage.setItem("theme", initialTheme);
     }
@@ -35,26 +37,33 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
+  // Apply theme to document
   const applyTheme = (newTheme: Theme) => {
     const root = document.documentElement;
     
     // Remove both classes first
     root.classList.remove("light", "dark");
     
-    // Add the appropriate class
-    if (newTheme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.add("light");
-    }
+    // Add the new theme class
+    root.classList.add(newTheme);
     
-    console.log("Theme applied:", newTheme, "HTML classes:", root.className);
+    // Also set data attribute for additional targeting
+    root.setAttribute("data-theme", newTheme);
+    
+    console.log("✅ Theme applied:", newTheme, "| Classes:", root.className);
   };
 
+  // Toggle between themes
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
-    console.log("Toggling theme from", theme, "to", newTheme);
+    console.log("🔄 Toggling theme from", theme, "to", newTheme);
     setTheme(newTheme);
+  };
+
+  // Set theme directly
+  const setTheme = (newTheme: Theme) => {
+    console.log("🎨 Setting theme to:", newTheme);
+    setThemeState(newTheme);
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
   };
@@ -65,7 +74,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
