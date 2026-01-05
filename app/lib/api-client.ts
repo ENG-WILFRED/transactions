@@ -18,6 +18,7 @@ import type {
 } from './schemas';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://pension-backend-rs4h.onrender.com';
+const API_TIMEOUT = 30000; // 30 seconds timeout
 
 interface ApiResponse<T = any> {
   success: boolean;
@@ -48,9 +49,47 @@ function getAuthHeaders(): Record<string, string> {
   return token ? { 'Authorization': `Bearer ${token}` } : {};
 }
 
+/**
+ * Custom timeout error class
+ */
+class TimeoutError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TimeoutError';
+  }
+}
+
+/**
+ * Fetch with timeout support
+ */
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit = {},
+  timeout: number = API_TIMEOUT
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new TimeoutError('Request timeout - server took too long to respond');
+    }
+    throw error;
+  }
+}
+
 export async function apiCall<T = any>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  timeout: number = API_TIMEOUT
 ): Promise<ApiResponse<T>> {
   const url = `${API_BASE_URL}${endpoint}`;
 
@@ -67,10 +106,14 @@ export async function apiCall<T = any>(
   }
 
   try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
+    const response = await fetchWithTimeout(
+      url,
+      {
+        ...options,
+        headers,
+      },
+      timeout
+    );
 
     const data = await response.json();
 
@@ -87,6 +130,25 @@ export async function apiCall<T = any>(
       ...data,
     };
   } catch (error) {
+    // Handle timeout errors gracefully
+    if (error instanceof TimeoutError) {
+      return {
+        success: false,
+        error: 'Request timeout - server is taking too long to respond. Please try again.',
+      };
+    }
+    
+    // Handle network errors
+    if (error instanceof Error) {
+      // Don't log timeout or network errors to console (they're expected)
+      if (error.message.includes('fetch') || error.message.includes('network')) {
+        return {
+          success: false,
+          error: 'Network error - please check your internet connection',
+        };
+      }
+    }
+    
     console.error('API call error:', error);
     return {
       success: false,
@@ -103,11 +165,11 @@ export const authApi = {
     apiCall<RegistrationInitResponse>('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
-    }),
+    }, 45000), // 45 seconds for registration (longer due to M-Pesa integration)
   getRegisterStatus: (transactionId: string) =>
     apiCall<RegistrationStatusResponse>(`/api/auth/register/status/${transactionId}`, {
       method: 'GET',
-    }),
+    }, 20000), // 20 seconds for status checks (shorter for polling)
   login: (data: { identifier: string; password: string }) =>
     apiCall<LoginResponse>('/api/auth/login', {
       method: 'POST',
@@ -512,6 +574,9 @@ export const reportsApi = {
     }>;
   }) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+
       const response = await fetch(`${API_BASE_URL}/api/reports/generate-transaction`, {
         method: 'POST',
         headers: {
@@ -519,11 +584,17 @@ export const reportsApi = {
           ...getAuthHeaders(),
         },
         body: JSON.stringify(data),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
       const result = await response.json();
       return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error generating transaction report:', error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        return { success: false, error: 'Request timeout - server took too long to respond' };
+      }
       return { success: false, error: 'Failed to generate transaction report' };
     }
   },
@@ -539,6 +610,9 @@ export const reportsApi = {
     transactions: Array<any>;
   }) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+
       const response = await fetch(`${API_BASE_URL}/api/reports/generate-customer`, {
         method: 'POST',
         headers: {
@@ -546,62 +620,95 @@ export const reportsApi = {
           ...getAuthHeaders(),
         },
         body: JSON.stringify(data),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
       const result = await response.json();
       return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error generating customer report:', error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        return { success: false, error: 'Request timeout - server took too long to respond' };
+      }
       return { success: false, error: 'Failed to generate customer report' };
     }
   },
 
   getAll: async () => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+
       const response = await fetch(`${API_BASE_URL}/api/reports`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           ...getAuthHeaders(),
         },
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
       const result = await response.json();
       return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error fetching reports:', error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        return { success: false, error: 'Request timeout - server took too long to respond' };
+      }
       return { success: false, error: 'Failed to fetch reports' };
     }
   },
 
   getById: async (reportId: string) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+
       const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           ...getAuthHeaders(),
         },
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
       const result = await response.json();
       return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error fetching report:', error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        return { success: false, error: 'Request timeout - server took too long to respond' };
+      }
       return { success: false, error: 'Failed to fetch report' };
     }
   },
 
   delete: async (reportId: string) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+
       const response = await fetch(`${API_BASE_URL}/api/reports/${reportId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           ...getAuthHeaders(),
         },
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
       const result = await response.json();
       return { success: response.ok, ...result };
     } catch (error) {
       console.error('Error deleting report:', error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        return { success: false, error: 'Request timeout - server took too long to respond' };
+      }
       return { success: false, error: 'Failed to delete report' };
     }
   },

@@ -22,7 +22,9 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [polling, setPolling] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const pollRef = useRef<number | null>(null);
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollAttemptsRef = useRef(0);
+  const isPollingRef = useRef(false);
 
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -193,6 +195,17 @@ export default function RegisterForm() {
     toast.info('ℹ️ You must accept the Terms and Conditions to proceed');
   };
 
+  // Stop polling function
+  const stopPolling = () => {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+    isPollingRef.current = false;
+    pollAttemptsRef.current = 0;
+    setPolling(false);
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     try { e.preventDefault?.(); } catch {}
 
@@ -221,12 +234,23 @@ export default function RegisterForm() {
       
       if (!result.success) {
         const errorMsg = result.error || 'Registration failed';
-        if (errorMsg.includes('already')) {
+        
+        // Check if it's a timeout error
+        if (errorMsg.toLowerCase().includes('timeout') || errorMsg.toLowerCase().includes('took too long')) {
+          toast.error('⏱️ Server is taking too long. This might be due to:');
+          setTimeout(() => {
+            toast.info('• Slow internet connection\n• Server is waking up (please wait 30 seconds and try again)\n• High server load', {
+              duration: 8000,
+            });
+          }, 500);
+        } else if (errorMsg.toLowerCase().includes('network')) {
+          toast.error('🌐 Network error - please check your internet connection');
+        } else if (errorMsg.includes('already')) {
           toast.error('❌ Email or phone already registered');
         } else if (errorMsg.includes('Payment') || errorMsg.includes('payment')) {
           toast.error('💳 Failed to initiate payment. Please check your details and try again.');
         } else {
-          toast.error(errorMsg);
+          toast.error(`❌ ${errorMsg}`);
         }
         setLoading(false);
         return;
@@ -275,86 +299,137 @@ export default function RegisterForm() {
     fetchTerms();
   }, []);
 
+  // Payment polling effect
   useEffect(() => {
-    if (!paymentPending?.transactionId || !polling) return;
+    if (!paymentPending?.transactionId || !polling) {
+      return;
+    }
 
-    let attempts = 0;
-    const maxAttempts = 120;
+    // Prevent multiple polling instances
+    if (isPollingRef.current) {
+      return;
+    }
+
+    isPollingRef.current = true;
+    pollAttemptsRef.current = 0;
+    const maxAttempts = 60; // 60 attempts * 3 seconds = 3 minutes max
+    let hasShownLoadingToast = false;
 
     const poll = async () => {
-      attempts++;
+      // Stop if we've exceeded max attempts
+      if (pollAttemptsRef.current >= maxAttempts) {
+        toast.error('⏱️ Payment confirmation timeout. Please check your M-Pesa messages and contact support if payment was deducted.');
+        stopPolling();
+        setPaymentPending(null);
+        setLoading(false);
+        return;
+      }
+
+      pollAttemptsRef.current++;
+
       try {
         const res = await authApi.getRegisterStatus(paymentPending.transactionId as string);
+        
+        // Show loading toast after first successful poll
+        if (pollAttemptsRef.current === 1 && !hasShownLoadingToast) {
+          toast.loading('⏳ Waiting for payment confirmation...');
+          hasShownLoadingToast = true;
+        }
+
+        // Handle timeout errors gracefully (don't stop polling)
+        if (!res.success && res.error?.toLowerCase().includes('timeout')) {
+          console.warn('Status check timed out, will retry...');
+          return; // Continue polling
+        }
+
+        // Handle network errors gracefully
+        if (!res.success && res.error?.toLowerCase().includes('network')) {
+          console.warn('Network error during status check, will retry...');
+          return; // Continue polling
+        }
         
         if (!res.success) {
           const status = (res as any).status;
           
           if (status === 'payment_failed') {
+            toast.dismiss();
             toast.error('❌ Payment failed. Please try again.');
-            setPolling(false);
+            stopPolling();
             setPaymentPending(null);
             setLoading(false);
             return;
           }
           
           console.warn('Status check returned non-success', res);
-        } else {
-          const s = (res as any).status;
-          
-          if (s === 'payment_pending' && attempts === 1) {
-            toast.loading('⏳ Waiting for payment confirmation...');
-          }
-
-          if (s === 'registration_completed') {
-            const token = (res as any).token;
-            if (token && typeof window !== 'undefined') {
-              localStorage.setItem('auth_token', token);
-            }
-            toast.success('🎉 Registration completed! You are now signed in.');
-            setPolling(false);
-            setPaymentPending(null);
-            setLoading(false);
-            setTimeout(() => router.push('/dashboard'), 1500);
-            return;
-          }
-
-          if (s === 'payment_failed') {
-            toast.error('❌ Payment failed. Please try again.');
-            setPolling(false);
-            setPaymentPending(null);
-            setLoading(false);
-            return;
-          }
+          return; // Continue polling
         }
 
-        if (attempts >= maxAttempts) {
-          toast.error('⏱️ Payment confirmation timeout. Please check the transaction status and try again.');
-          setPolling(false);
+        const s = (res as any).status;
+        
+        // Success case - registration completed
+        if (s === 'registration_completed') {
+          const token = (res as any).token;
+          if (token && typeof window !== 'undefined') {
+            localStorage.setItem('auth_token', token);
+          }
+          toast.dismiss();
+          toast.success('🎉 Registration completed! You are now signed in.');
+          stopPolling();
+          setPaymentPending(null);
+          setLoading(false);
+          setTimeout(() => router.push('/dashboard'), 1500);
+          return;
+        }
+
+        // Payment failed
+        if (s === 'payment_failed') {
+          toast.dismiss();
+          toast.error('❌ Payment failed. Please try again.');
+          stopPolling();
           setPaymentPending(null);
           setLoading(false);
           return;
         }
+
+        // Still pending - continue polling
+        if (s === 'payment_pending') {
+          // Continue polling
+          return;
+        }
+
       } catch (err) {
         console.error('Poll error:', err);
+        // Don't stop polling on individual errors, just log and continue
       }
     };
 
+    // Start polling immediately
     poll();
-    pollRef.current = window.setInterval(poll, 2000) as unknown as number;
 
+    // Set up interval (poll every 3 seconds instead of 2 for better server performance)
+    pollIntervalRef.current = setInterval(poll, 3000);
+
+    // Cleanup function
     return () => {
-      if (pollRef.current) window.clearInterval(pollRef.current);
-      pollRef.current = null;
+      stopPolling();
     };
   }, [paymentPending?.transactionId, polling, router]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopPolling();
+    };
+  }, []);
 
   if (paymentPending) {
     return (
       <PaymentPendingModal
         transactionId={paymentPending.transactionId}
         onCancel={() => {
-          setPolling(false);
+          stopPolling();
           setPaymentPending(null);
+          setLoading(false);
         }}
       />
     );
