@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/components/sections/PaymentPendingModal.tsx
 import { Loader2 } from 'lucide-react';
 
 interface PaymentPendingModalProps {
