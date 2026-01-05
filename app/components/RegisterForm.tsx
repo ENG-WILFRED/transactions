@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/components/RegisterForm.tsx
 'use client';
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
@@ -18,7 +17,6 @@ import PensionSection from './sections/PensionSection';
 import PaymentPendingModal from './sections/PaymentPendingModal';
 import TermsAndConditionsModal from './TermsAndConditionsModal';
 
-// API TIMEOUT CONSTANT
 // API TIMEOUT CONSTANTS
 const API_TIMEOUT = 20000; // 20 seconds per request
 const PAYMENT_TOTAL_TIMEOUT = 240000; // 4 minutes total for payment confirmation
@@ -438,7 +436,7 @@ export default function RegisterForm() {
               <div className="relative">
                 <img
                   src="/pensions.jpeg"
-                  alt="Pensions logo"
+                  alt="AutoNest Pension logo"
                   className="w-28 h-28 object-cover rounded-2xl shadow-xl border-2 border-white/20"
                 />
               </div>
@@ -446,7 +444,7 @@ export default function RegisterForm() {
 
             <h1 className="text-5xl font-black text-white mb-4 leading-tight">Secure Your<br />Future Today</h1>
             
-            <p className="text-xl text-blue-100 mb-8 font-medium">Start your pension journey in minutes</p>
+            <p className="text-xl text-blue-100 mb-8 font-medium">Start your AutoNest Pension journey in minutes</p>
 
             <div className="space-y-4 text-left mt-12 pt-8 border-t border-white/20">
               <div className="flex items-start gap-3">
@@ -479,35 +477,35 @@ export default function RegisterForm() {
             </div>
 
             <p className="text-white/60 text-xs mt-12 pt-8 border-t border-white/10">
-              Join thousands managing their retirement
+              Join thousands managing their retirement with AutoNest Pension
             </p>
           </div>
         </div>
 
         {/* Form Panel */}
         <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto flex flex-col rounded-none shadow-2xl">
-            <div className="flex items-center justify-between gap-4 p-6 border-b">
-              <div className="flex items-center gap-3">
-                  <img src="/pensions.jpeg" alt="Pensions" className="w-8 h-8 rounded-md object-cover shadow-sm" />
-                  <div className="text-lg font-semibold text-gray-900">PENSIONS</div>
-                </div>
-              <div>
-                <Link href="/login" className="text-sm bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 px-4 py-2 rounded-lg shadow-sm text-indigo-600 hover:bg-indigo-50 font-semibold transition">Already registered? Sign in</Link>
+          <div className="flex items-center justify-between gap-4 p-6 border-b">
+            <div className="flex items-center gap-3">
+              <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-8 h-8 rounded-md object-cover shadow-sm" />
+              <div className="text-lg font-semibold text-gray-900">AutoNest Pension</div>
+            </div>
+            <div>
+              <Link href="/login" className="text-sm bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 px-4 py-2 rounded-lg shadow-sm text-indigo-600 hover:bg-indigo-50 font-semibold transition">Already registered? Sign in</Link>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-auto p-6 sm:p-8 lg:p-10">
+            <div className="mb-8">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">Create Account</h2>
+              <p className="text-gray-600 mt-1">Step <span className="font-bold text-indigo-600">{step + 1}</span> of <span className="font-bold text-indigo-600">{steps.length}</span> — <span className="font-semibold">{steps[step]}</span></p>
+
+              <div className="w-full bg-gray-200 h-2 rounded-full mt-4 overflow-hidden">
+                <div className="h-2 bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-300" style={{ width: `${((step + 1) / steps.length) * 100}%` }} />
               </div>
             </div>
 
-            <div className="flex-1 overflow-auto p-6 sm:p-8 lg:p-10">
-              <div className="mb-8">
-                <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">Create Account</h2>
-                <p className="text-gray-600 mt-1">Step <span className="font-bold text-indigo-600">{step + 1}</span> of <span className="font-bold text-indigo-600">{steps.length}</span> — <span className="font-semibold">{steps[step]}</span></p>
-
-                <div className="w-full bg-gray-200 h-2 rounded-full mt-4 overflow-hidden">
-                  <div className="h-2 bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-300" style={{ width: `${((step + 1) / steps.length) * 100}%` }} />
-                </div>
-              </div>
-
-              <form className="space-y-6 min-h-[55vh]" onSubmit={handleSubmit}>
-                <div className="space-y-4 min-h-[50vh] flex flex-col">
+            <form className="space-y-6 min-h-[55vh]" onSubmit={handleSubmit}>
+              <div className="space-y-4 min-h-[50vh] flex flex-col">
                 {step === 0 && (
                   <div className="transform scale-100">
                     <AccountCredentialsSection
@@ -584,67 +582,67 @@ export default function RegisterForm() {
                     termsError={termsError}
                   />
                 )}
-                </div>
-              </form>
-            </div>
+              </div>
+            </form>
+          </div>
 
-            <div className="border-t bg-white p-4 lg:p-6 sticky bottom-0 shadow-xl">
-              <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
-                <div className="flex items-center gap-3 w-full">
+          <div className="border-t bg-white p-4 lg:p-6 sticky bottom-0 shadow-xl">
+            <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex items-center gap-3 w-full">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  disabled={step === 0}
+                  className={`flex-1 px-6 py-3 rounded-xl font-semibold border-2 text-base transition ${step === 0 ? 'text-gray-400 border-gray-200 cursor-not-allowed bg-gray-50' : 'text-indigo-700 border-indigo-300 hover:bg-indigo-50 bg-white'}`}
+                >
+                  ← Back
+                </button>
+
+                {step < steps.length - 1 ? (
                   <button
                     type="button"
-                    onClick={handleBack}
-                    disabled={step === 0}
-                    className={`flex-1 px-6 py-3 rounded-xl font-semibold border-2 text-base transition ${step === 0 ? 'text-gray-400 border-gray-200 cursor-not-allowed bg-gray-50' : 'text-indigo-700 border-indigo-300 hover:bg-indigo-50 bg-white'}`}
+                    onClick={handleNext}
+                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white text-base font-semibold hover:shadow-lg transition flex items-center justify-center gap-2"
                   >
-                    ← Back
+                    Next →
                   </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    disabled={loading}
+                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white text-base font-semibold hover:shadow-lg disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <span>Complete Registration</span>
+                        <span>→</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
 
-                  {step < steps.length - 1 ? (
-                    <button
-                      type="button"
-                      onClick={handleNext}
-                      className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white text-base font-semibold hover:shadow-lg transition flex items-center justify-center gap-2"
-                    >
-                      Next →
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleNext}
-                      disabled={loading}
-                      className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white text-base font-semibold hover:shadow-lg disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
-                    >
-                      {loading ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Creating...
-                        </>
-                      ) : (
-                        <>
-                          <span>Complete Registration</span>
-                          <span>→</span>
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 mt-3 sm:mt-0">
-                  {steps.map((s, i) => (
-                    <button
-                      key={s}
-                      onClick={() => { setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                      className={`w-3 h-3 rounded-full transition ${i <= step ? 'bg-indigo-600 w-8 rounded-full' : 'bg-gray-300 hover:bg-gray-400'} focus:outline-none`}
-                      aria-label={`Step ${i + 1}`}
-                      title={s}
-                    />
-                  ))}
-                </div>
+              <div className="flex items-center gap-2 mt-3 sm:mt-0">
+                {steps.map((s, i) => (
+                  <button
+                    key={s}
+                    onClick={() => { setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                    className={`w-3 h-3 rounded-full transition ${i <= step ? 'bg-indigo-600 w-8 rounded-full' : 'bg-gray-300 hover:bg-gray-400'} focus:outline-none`}
+                    aria-label={`Step ${i + 1}`}
+                    title={s}
+                  />
+                ))}
               </div>
             </div>
           </div>
         </div>
+      </div>
 
       <TermsAndConditionsModal
         isOpen={showTermsModal}

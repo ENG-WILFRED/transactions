@@ -1,4 +1,3 @@
-///home/hp/JERE/pension/app/components/LoginForm.tsx
 'use client';
 
 import { FormEvent, useState } from 'react';
@@ -85,7 +84,7 @@ export default function LoginForm() {
             <div className="relative">
               <img
                 src="/pensions.jpeg"
-                alt="Pensions logo"
+                alt="AutoNest Pension logo"
                 className="w-28 h-28 object-cover rounded-2xl shadow-xl border-2 border-white/20"
               />
               <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-white text-lg">
@@ -98,7 +97,7 @@ export default function LoginForm() {
           <h1 className="text-5xl font-black text-white mb-4 leading-tight">Welcome Back</h1>
           
           {/* Subheading */}
-          <p className="text-xl text-blue-100 mb-8 font-medium">Access your pension account</p>
+          <p className="text-xl text-blue-100 mb-8 font-medium">Access your AutoNest Pension account</p>
 
           {/* Features List */}
           <div className="space-y-4 text-left mt-12 pt-8 border-t border-white/20">
@@ -124,17 +123,17 @@ export default function LoginForm() {
 
           {/* Footer text */}
           <p className="text-white/60 text-xs mt-12 pt-8 border-t border-white/10">
-            Your financial future starts here
+            Your financial future starts here with AutoNest Pension
           </p>
         </div>
       </div>
 
       {/* Form Panel */}
       <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto flex flex-col justify-center bg-white">
-          <div className="lg:hidden flex items-center justify-between gap-4 p-6 border-b bg-white sticky top-0 z-10">
+        <div className="lg:hidden flex items-center justify-between gap-4 p-6 border-b bg-white sticky top-0 z-10">
           <div className="flex items-center gap-2">
-            <img src="/pensions.jpeg" alt="Pensions" className="w-8 h-8 rounded-md object-cover shadow-sm" />
-            <div className="text-lg font-semibold text-gray-900">Pensions</div>
+            <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-8 h-8 rounded-md object-cover shadow-sm" />
+            <div className="text-lg font-semibold text-gray-900">AutoNest Pension</div>
           </div>
           <Link href="/register" className="text-sm bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 px-4 py-2 rounded-lg text-indigo-600 font-semibold transition hover:bg-indigo-50">Create account</Link>
         </div>
@@ -142,7 +141,7 @@ export default function LoginForm() {
         <div className="p-4 sm:p-6 lg:p-8 max-w-md mx-auto w-full">
           <div className="mb-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-            <p className="text-gray-600">Sign in to your pension account</p>
+            <p className="text-gray-600">Sign in to your AutoNest Pension account</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -210,7 +209,7 @@ export default function LoginForm() {
 
           <div className="mt-8 pt-8 border-t border-gray-200">
             <p className="text-gray-600 text-center mb-4">
-              New to Pensions?{' '}
+              New to AutoNest Pension?{' '}
               <Link href="/register" className="text-indigo-600 hover:text-indigo-700 font-bold">
                 Create an account
               </Link>
