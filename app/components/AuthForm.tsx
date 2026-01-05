@@ -25,6 +25,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
     pin: '',
     firstName: '',
     lastName: '',
+    bankName: '',
     bankAccountName: '',
     bankAccountNumber: '',
     bankBranchName: '',
@@ -78,6 +79,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
           email: formData.email,
           phone: formData.phone,
           pin: formData.pin,
+          bankName: formData.bankName,
           bankAccountName: formData.bankAccountName,
           bankAccountNumber: formData.bankAccountNumber,
           bankBranchName: formData.bankBranchName,
@@ -349,6 +351,22 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
                   <h3 className="text-sm font-semibold text-gray-700 mb-3">Bank Account Details</h3>
                   
                   <div className="space-y-3">
+                    <div>
+                      <label htmlFor="bankName" className="block text-sm font-medium text-gray-700 mb-1">
+                        Bank Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="bankName"
+                        name="bankName"
+                        type="text"
+                        value={formData.bankName}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                        placeholder="e.g., Equity Bank, KCB"
+                      />
+                    </div>
+
                     <div>
                       <label htmlFor="bankAccountName" className="block text-sm font-medium text-gray-700 mb-1">
                         Account Name <span className="text-red-500">*</span>

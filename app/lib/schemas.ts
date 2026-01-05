@@ -19,6 +19,7 @@ export const registrationSchema = z.object({
   bankAccountNumber: z.string().min(1, 'Bank account number is required'),
   bankBranchName: z.string().min(1, 'Bank branch name is required'),
   bankBranchCode: z.string().min(1, 'Bank branch code is required'),
+  bankName: z.string().min(1, 'Bank name is required'),
   
   // Personal information
   firstName: z.string().optional(),

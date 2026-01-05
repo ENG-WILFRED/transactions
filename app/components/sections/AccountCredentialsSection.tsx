@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/components/sections/AccountCredentialsSection.tsx
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
@@ -56,7 +55,7 @@ export default function AccountCredentialsSection({ formData, errors, onChange }
 
         <div>
           <label htmlFor="pin" className="block text-sm font-medium text-gray-700 mb-1">
-            Please enter your 4-digit USSD PIN for *38*424*318# (Optional)
+            Please enter your 4-digit USSD PIN for *384*24*318# (Optional)
           </label>
           <div className="relative">
             <input

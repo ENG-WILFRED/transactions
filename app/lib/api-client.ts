@@ -17,7 +17,7 @@ import type {
   UssdLoginResponse,
 } from './schemas';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://pension-backend-rs4h.onrender.com';
 
 interface ApiResponse<T = any> {
   success: boolean;

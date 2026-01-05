@@ -41,6 +41,7 @@ export default function RegisterForm() {
     bankAccountNumber: '',
     bankBranchName: '',
     bankBranchCode: '',
+    bankName: '',
     
     // Personal information
     firstName: '',
@@ -101,9 +102,9 @@ export default function RegisterForm() {
     if (idx === 0) {
       if (!formData.email) e.email = 'Email is required';
       if (!formData.phone) e.phone = 'Phone is required';
-      // PIN is now optional - remove validation
-      if (formData.pin && !/^\d{4}$/.test(formData.pin)) {
-        e.pin = 'PIN must be 4 digits if provided';
+      // PIN is optional - only validate if provided
+      if (formData.pin && formData.pin.trim() !== '' && !/^\d{4}$/.test(formData.pin)) {
+        e.pin = 'PIN must be exactly 4 digits if provided';
       }
     }
     if (idx === 4) {
@@ -112,6 +113,7 @@ export default function RegisterForm() {
       if (!formData.bankAccountNumber) e.bankAccountNumber = 'Bank account number is required';
       if (!formData.bankBranchName) e.bankBranchName = 'Bank branch name is required';
       if (!formData.bankBranchCode) e.bankBranchCode = 'Bank branch code is required';
+      if (!formData.bankName) e.bankName = 'Bank name is required';
       if (formData.contributionRate == null) e.contributionRate = 'Select contribution rate';
     }
 
@@ -157,7 +159,13 @@ export default function RegisterForm() {
 
   const validateForm = () => {
     try {
-      registrationSchema.parse(formData);
+      // Clean the PIN field - if empty, set to undefined
+      const cleanedData = {
+        ...formData,
+        pin: formData.pin && formData.pin.trim() !== '' ? formData.pin : undefined,
+      };
+      
+      registrationSchema.parse(cleanedData);
       setErrors({});
       return true;
     } catch (err) {
@@ -198,6 +206,8 @@ export default function RegisterForm() {
     try {
       const dataToSend = {
         ...formData,
+        // Clean PIN - if empty, don't send it
+        pin: formData.pin && formData.pin.trim() !== '' ? formData.pin : undefined,
         // Ensure defaults are set
         accountType: formData.accountType || 'MANDATORY',
         riskProfile: formData.riskProfile || 'MEDIUM',
@@ -497,6 +507,7 @@ export default function RegisterForm() {
                       bankAccountNumber: formData.bankAccountNumber as string,
                       bankBranchName: formData.bankBranchName as string,
                       bankBranchCode: formData.bankBranchCode as string,
+                      bankName: formData.bankName as string,
                       accountType: formData.accountType,
                       riskProfile: formData.riskProfile,
                     }}
