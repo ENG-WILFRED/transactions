@@ -45,6 +45,11 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
     router.push("/login");
   };
 
+  const handleThemeToggle = () => {
+    console.log("Theme toggle clicked. Current theme:", theme);
+    toggleTheme();
+  };
+
   // Admin navigation items
   const adminNavItems = [
     {
@@ -182,7 +187,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
       <div className="p-4 border-t border-gray-700 dark:border-gray-600 space-y-2">
         {/* Dark Mode Toggle */}
         <button
-          onClick={toggleTheme}
+          onClick={handleThemeToggle}
           className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700 transition-all"
         >
           <div className="flex items-center gap-3">

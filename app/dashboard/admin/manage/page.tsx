@@ -1,4 +1,4 @@
-///home/hp/JERE/AutoNest/app/dashboard/admin/manage/page.tsx
+///app/dashboard/admin/manage/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -57,7 +57,6 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
       ]);
 
       if (usersRes.success && usersRes.users) {
-        // Filter only customers
         const customers = usersRes.users.filter((u: User) => u.role === 'customer');
         setUsers(customers);
       }
@@ -84,7 +83,6 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
     setSubmitting(true);
 
     try {
-      // Create account via API
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}/api/accounts/create`, {
         method: 'POST',
         headers: {
@@ -125,15 +123,15 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto transition-colors duration-300">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <CreditCard className="text-indigo-600" size={28} />
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors duration-300">
+            <CreditCard className="text-indigo-600 dark:text-indigo-400" size={28} />
             Create Pension Account
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
             <X size={24} />
           </button>
@@ -141,14 +139,14 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-            <p className="ml-3 text-gray-600">Loading...</p>
+            <Loader2 className="w-8 h-8 animate-spin text-indigo-600 dark:text-indigo-400" />
+            <p className="ml-3 text-gray-600 dark:text-gray-300">Loading...</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* User Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
                 Select Customer *
               </label>
               <div className="relative mb-2">
@@ -158,13 +156,13 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
                   placeholder="Search by name or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
                 />
               </div>
               <select
                 value={formData.userId}
                 onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
                 required
                 size={5}
               >
@@ -179,20 +177,20 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
                   ))
                 )}
               </select>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-300">
                 {users.length} customer{users.length !== 1 ? 's' : ''} available
               </p>
             </div>
 
             {/* Account Type Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
                 Account Type *
               </label>
               <select
                 value={formData.accountTypeId}
                 onChange={(e) => setFormData({ ...formData, accountTypeId: e.target.value })}
-                className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
                 required
               >
                 <option value="">-- Select account type --</option>
@@ -204,7 +202,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
                 ))}
               </select>
               {accountTypes.length === 0 && (
-                <p className="text-xs text-red-500 mt-1">
+                <p className="text-xs text-red-500 dark:text-red-400 mt-1 transition-colors duration-300">
                   No account types available. Please create account types first.
                 </p>
               )}
@@ -212,7 +210,7 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
 
             {/* Initial Balance */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300">
                 Initial Balance (KES) - Optional
               </label>
               <input
@@ -221,10 +219,10 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
                 value={formData.initialBalance}
                 onChange={(e) => setFormData({ ...formData, initialBalance: e.target.value })}
                 placeholder="0.00"
-                className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 transition-colors duration-300"
                 min="0"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-300">
                 Leave as 0 for new accounts
               </p>
             </div>
@@ -234,14 +232,14 @@ function CreateAccountModal({ isOpen, onClose, onSuccess }: CreateAccountModalPr
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 border border-gray-300 text-gray-700 py-3 px-4 rounded-xl hover:bg-gray-50 transition font-semibold"
+                className="flex-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition font-semibold"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting || !formData.userId || !formData.accountTypeId}
-                className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-xl hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
+                className="flex-1 bg-indigo-600 dark:bg-indigo-700 text-white py-3 px-4 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition font-semibold flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>
@@ -275,62 +273,62 @@ export default function AdminAccountManagementPage() {
     <div className="px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Account Management</h1>
-        <p className="text-gray-600 mt-2">Create and manage pension accounts for customers</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Account Management</h1>
+        <p className="text-gray-600 dark:text-gray-300 mt-2 transition-colors duration-300">Create and manage pension accounts for customers</p>
       </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-              <CreditCard className="text-indigo-600" size={24} />
+            <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-xl flex items-center justify-center transition-colors duration-300">
+              <CreditCard className="text-indigo-600 dark:text-indigo-400" size={24} />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900">Create Account</h3>
-              <p className="text-sm text-gray-600">Add new pension account</p>
+              <h3 className="font-bold text-gray-900 dark:text-white transition-colors duration-300">Create Account</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Add new pension account</p>
             </div>
           </div>
           <button
             onClick={() => setModalOpen(true)}
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-xl hover:bg-indigo-700 transition font-semibold flex items-center justify-center gap-2"
+            className="w-full bg-indigo-600 dark:bg-indigo-700 text-white py-2 px-4 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition font-semibold flex items-center justify-center gap-2"
           >
             <Plus size={18} />
             Create New Account
           </button>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <Users className="text-green-600" size={24} />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center transition-colors duration-300">
+              <Users className="text-green-600 dark:text-green-400" size={24} />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900">View Customers</h3>
-              <p className="text-sm text-gray-600">Manage customer list</p>
+              <h3 className="font-bold text-gray-900 dark:text-white transition-colors duration-300">View Customers</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Manage customer list</p>
             </div>
           </div>
           <button
             onClick={() => window.location.href = '/dashboard/admin/customers'}
-            className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-xl hover:bg-gray-50 transition font-semibold"
+            className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition font-semibold"
           >
             View All Customers
           </button>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-              <CreditCard className="text-purple-600" size={24} />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-xl flex items-center justify-center transition-colors duration-300">
+              <CreditCard className="text-purple-600 dark:text-purple-400" size={24} />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900">Account Types</h3>
-              <p className="text-sm text-gray-600">Manage account types</p>
+              <h3 className="font-bold text-gray-900 dark:text-white transition-colors duration-300">Account Types</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Manage account types</p>
             </div>
           </div>
           <button
             onClick={() => window.location.href = '/dashboard/admin/account-types'}
-            className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-xl hover:bg-gray-50 transition font-semibold"
+            className="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition font-semibold"
           >
             Manage Types
           </button>
@@ -338,16 +336,16 @@ export default function AdminAccountManagementPage() {
       </div>
 
       {/* Instructions */}
-      <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-lg mb-8">
-        <h3 className="text-lg font-bold text-blue-900 mb-2">How to Create Accounts</h3>
-        <ol className="list-decimal list-inside space-y-2 text-blue-800">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-6 rounded-lg mb-8 transition-colors duration-300">
+        <h3 className="text-lg font-bold text-blue-900 dark:text-blue-200 mb-2 transition-colors duration-300">How to Create Accounts</h3>
+        <ol className="list-decimal list-inside space-y-2 text-blue-800 dark:text-blue-300 transition-colors duration-300">
           <li>Click "Create New Account" button above</li>
           <li>Select a customer from the dropdown list</li>
           <li>Choose an account type (e.g., Individual Pension, Corporate Pension)</li>
           <li>Optionally set an initial balance</li>
           <li>Click "Create Account" to finish</li>
         </ol>
-        <p className="mt-4 text-sm text-blue-700">
+        <p className="mt-4 text-sm text-blue-700 dark:text-blue-300 transition-colors duration-300">
           💡 <strong>Tip:</strong> Make sure you have account types created before creating accounts. 
           If you don't see any account types, click "Manage Types" above to create them first.
         </p>
@@ -355,48 +353,48 @@ export default function AdminAccountManagementPage() {
 
       {/* Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">📋 Account Types Needed</h3>
-          <p className="text-gray-600 mb-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-300">📋 Account Types Needed</h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-4 transition-colors duration-300">
             Before creating accounts, ensure you have these account types set up:
           </p>
           <ul className="space-y-2">
             <li className="flex items-start gap-2">
-              <span className="text-indigo-600 font-bold">•</span>
-              <span className="text-gray-700">Individual Pension Account</span>
+              <span className="text-indigo-600 dark:text-indigo-400 font-bold">•</span>
+              <span className="text-gray-700 dark:text-gray-300 transition-colors duration-300">Individual Pension Account</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-indigo-600 font-bold">•</span>
-              <span className="text-gray-700">Corporate Pension Account</span>
+              <span className="text-indigo-600 dark:text-indigo-400 font-bold">•</span>
+              <span className="text-gray-700 dark:text-gray-300 transition-colors duration-300">Corporate Pension Account</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-indigo-600 font-bold">•</span>
-              <span className="text-gray-700">Retirement Savings Account</span>
+              <span className="text-indigo-600 dark:text-indigo-400 font-bold">•</span>
+              <span className="text-gray-700 dark:text-gray-300 transition-colors duration-300">Retirement Savings Account</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-indigo-600 font-bold">•</span>
-              <span className="text-gray-700">Voluntary Contribution Account</span>
+              <span className="text-indigo-600 dark:text-indigo-400 font-bold">•</span>
+              <span className="text-gray-700 dark:text-gray-300 transition-colors duration-300">Voluntary Contribution Account</span>
             </li>
           </ul>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">⚠️ Important Notes</h3>
-          <ul className="space-y-3 text-gray-600">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 transition-colors duration-300">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-300">⚠️ Important Notes</h3>
+          <ul className="space-y-3 text-gray-600 dark:text-gray-300 transition-colors duration-300">
             <li className="flex items-start gap-2">
-              <span className="text-yellow-600 font-bold">→</span>
+              <span className="text-yellow-600 dark:text-yellow-400 font-bold">→</span>
               <span>Each customer can have multiple accounts of different types</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-yellow-600 font-bold">→</span>
+              <span className="text-yellow-600 dark:text-yellow-400 font-bold">→</span>
               <span>Account numbers are auto-generated upon creation</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-yellow-600 font-bold">→</span>
+              <span className="text-yellow-600 dark:text-yellow-400 font-bold">→</span>
               <span>Initial balance is optional and can be set to 0</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-yellow-600 font-bold">→</span>
+              <span className="text-yellow-600 dark:text-yellow-400 font-bold">→</span>
               <span>Customers can only be assigned pension accounts, not admins</span>
             </li>
           </ul>

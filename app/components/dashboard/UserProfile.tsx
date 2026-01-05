@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/components/dashboard/UserProfile.tsx
 interface User {
   id: string;
   email: string;

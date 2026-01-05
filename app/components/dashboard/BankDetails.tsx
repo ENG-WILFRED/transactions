@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/components/dashboard/BankDetails.tsx
 import { CreditCard } from 'lucide-react';
 
 interface BankDetails {

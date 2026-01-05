@@ -1,3 +1,4 @@
+///home/hp/JERE/AutoNest/app/components/dashboard/BalanceCards.tsx
 import { Wallet, ArrowDownRight, TrendingUp, Clock } from 'lucide-react';
 
 interface BalanceCardsProps {

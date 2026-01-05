@@ -18,9 +18,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Load theme from localStorage on mount
   useEffect(() => {
-    setMounted(true);
     const savedTheme = localStorage.getItem("theme") as Theme | null;
-    if (savedTheme) {
+    
+    if (savedTheme === "dark" || savedTheme === "light") {
       setTheme(savedTheme);
       applyTheme(savedTheme);
     } else {
@@ -29,20 +29,31 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const initialTheme = prefersDark ? "dark" : "light";
       setTheme(initialTheme);
       applyTheme(initialTheme);
+      localStorage.setItem("theme", initialTheme);
     }
+    
+    setMounted(true);
   }, []);
 
   const applyTheme = (newTheme: Theme) => {
     const root = document.documentElement;
+    
+    // Remove both classes first
+    root.classList.remove("light", "dark");
+    
+    // Add the appropriate class
     if (newTheme === "dark") {
       root.classList.add("dark");
     } else {
-      root.classList.remove("dark");
+      root.classList.add("light");
     }
+    
+    console.log("Theme applied:", newTheme, "HTML classes:", root.className);
   };
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
+    console.log("Toggling theme from", theme, "to", newTheme);
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
@@ -50,7 +61,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Prevent flash of unstyled content
   if (!mounted) {
-    return null;
+    return <div style={{ visibility: "hidden" }}>{children}</div>;
   }
 
   return (

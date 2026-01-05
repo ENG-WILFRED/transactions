@@ -158,7 +158,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="h-screen bg-gradient-to-br from-red-50 to-orange-100 dark:from-gray-950 dark:to-red-950 flex flex-col items-center justify-center transition-colors duration-300">
+      <div className="h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-gray-950 dark:to-red-950 flex flex-col items-center justify-center transition-colors duration-300">
         <div className="h-12 w-12 border-4 border-red-600 dark:border-red-400 border-t-transparent rounded-full animate-spin"></div>
         <p className="mt-4 text-red-700 dark:text-red-300 font-medium">Loading admin dashboard...</p>
       </div>
@@ -168,14 +168,15 @@ export default function AdminDashboard() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
+      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
         <h1 className="text-2xl sm:text-3xl font-bold">Welcome, {user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : 'Admin'}! 👋</h1>
-        <p className="text-indigo-100 dark:text-indigo-200 mt-2">Monitor system performance, manage users, and oversee platform operations.</p>
+        <p className="text-indigo-50 dark:text-indigo-200 mt-2">Monitor system performance, manage users, and oversee platform operations.</p>
       </div>
 
       {/* ADMIN STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
+        {/* Total Users Card */}
+        <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-300">Total Users</h4>
             <Users size={20} className="sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
@@ -184,7 +185,8 @@ export default function AdminDashboard() {
           <p className="text-xs text-green-600 dark:text-green-400 mt-2 transition-colors duration-300">↑ {stats.activeUsers} customers</p>
         </div>
 
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
+        {/* Total Assets Card */}
+        <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-300">Total Assets</h4>
             <Wallet size={20} className="sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
@@ -193,7 +195,8 @@ export default function AdminDashboard() {
           <p className="text-xs text-green-600 dark:text-green-400 mt-2 transition-colors duration-300">↑ KES {(stats.monthlyRevenue / 1000000).toFixed(1)}M this month</p>
         </div>
 
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
+        {/* Active Loans Card */}
+        <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-300">Active Loans</h4>
             <TrendingUp size={20} className="sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
@@ -205,6 +208,7 @@ export default function AdminDashboard() {
 
       {/* SYSTEM METRICS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {/* API Uptime */}
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <p className="text-xs sm:text-sm opacity-90">API Uptime</p>
           <p className="text-2xl sm:text-3xl font-bold mt-2">{systemMetrics.apiUptime}%</p>
@@ -213,18 +217,21 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Active Connections */}
         <div className="bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 text-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <p className="text-xs sm:text-sm opacity-90">Active Connections</p>
           <p className="text-2xl sm:text-3xl font-bold mt-2">{systemMetrics.activeConnections}</p>
           <p className="text-xs opacity-75 mt-2">Real-time users</p>
         </div>
 
+        {/* Daily Transactions */}
         <div className="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 text-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <p className="text-xs sm:text-sm opacity-90">Daily Transactions</p>
           <p className="text-2xl sm:text-3xl font-bold mt-2">{systemMetrics.dailyTransactions}</p>
           <p className="text-xs opacity-75 mt-2">In last 24 hours</p>
         </div>
 
+        {/* Avg Response Time */}
         <div className="bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 text-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl p-4 sm:p-6 transition-all duration-300">
           <p className="text-xs sm:text-sm opacity-90">Avg Response Time</p>
           <p className="text-2xl sm:text-3xl font-bold mt-2">{systemMetrics.avgResponseTime}ms</p>
@@ -236,8 +243,8 @@ export default function AdminDashboard() {
       <QuickActions userType="admin" />
 
       {/* MEMBERS LIST */}
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
-        <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 flex items-center justify-between flex-wrap gap-3 transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex items-center justify-between flex-wrap gap-3 transition-colors duration-300">
           <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 transition-colors duration-300">
             <Users size={20} className="sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400" />
             User Management ({members.length})
@@ -273,24 +280,24 @@ export default function AdminDashboard() {
 
         <div className="overflow-x-auto">
           {loadingUsers ? (
-            <div className="flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-12 bg-white dark:bg-gray-800">
               <div className="h-10 w-10 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
               <p className="ml-4 text-gray-600 dark:text-gray-400 transition-colors duration-300">Loading users...</p>
             </div>
           ) : members.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
+            <div className="flex flex-col items-center justify-center py-12 bg-white dark:bg-gray-800">
               <Users size={48} className="text-gray-300 dark:text-gray-600 mb-4 transition-colors duration-300" />
               <p className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">No users found</p>
               <p className="text-gray-500 dark:text-gray-500 text-sm transition-colors duration-300">Users will appear here once registered</p>
             </div>
           ) : (
             <table className="w-full">
-              <thead className="bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm transition-colors duration-300">
+              <thead className="bg-gray-50 dark:bg-gray-900 backdrop-blur-sm transition-colors duration-300">
                 <tr>
                   {["Name", "Email", "Phone", "Join Date", "Role", "Action"].map((h) => (
                     <th
                       key={h}
-                      className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide transition-colors duration-300"
+                      className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase tracking-wide transition-colors duration-300"
                     >
                       {h}
                     </th>
@@ -298,9 +305,9 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl transition-colors duration-300">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 backdrop-blur-xl transition-colors duration-300">
                 {members.map((member) => (
-                  <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                  <tr key={member.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300">
                       {member.firstName || member.lastName ? `${member.firstName || ''} ${member.lastName || ''}`.trim() : 'N/A'}
                     </td>
@@ -314,8 +321,8 @@ export default function AdminDashboard() {
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold transition-colors duration-300 ${
                         member.role === 'admin' 
-                          ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300' 
-                          : 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300'
+                          ? 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-300' 
+                          : 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300'
                       }`}>
                         {member.role || 'customer'}
                       </span>
@@ -342,7 +349,7 @@ export default function AdminDashboard() {
       )}
 
       {/* ALERTS & NOTIFICATIONS */}
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 transition-colors duration-300">
         <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2 transition-colors duration-300">
           <AlertCircle size={20} className="sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
           System Alerts & Notifications
