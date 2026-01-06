@@ -1,7 +1,6 @@
-///app/dashboard/Sidebar.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -35,6 +34,12 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration errors by only rendering theme-dependent UI after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
@@ -127,36 +132,39 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
 
       {/* Footer Actions */}
       <div className="p-4 border-t border-gray-700 dark:border-gray-600 space-y-2 transition-colors duration-300">
-        {/* Dark Mode Toggle - FIXED LOGIC */}
+        {/* Dark Mode Toggle - With proper hydration handling */}
         <button
           onClick={handleThemeToggle}
           className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-300 dark:text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-700 transition-all duration-300 group"
         >
           <div className="flex items-center gap-3">
-            {/* FIXED: Show opposite of current theme */}
-            {theme === "light" ? (
+            {/* Show placeholder during SSR, actual theme after mount */}
+            {!mounted ? (
+              <div className="w-5 h-5" />
+            ) : theme === "light" ? (
               <Moon size={20} className="text-blue-400 group-hover:rotate-12 transition-transform duration-300" />
             ) : (
               <Sun size={20} className="text-yellow-400 group-hover:rotate-90 transition-transform duration-300" />
             )}
             <span className="font-medium">
-              {/* FIXED: Show what mode you'll switch TO */}
-              {theme === "light" ? "Dark Mode" : "Light Mode"}
+              {!mounted ? "Theme" : theme === "light" ? "Dark Mode" : "Light Mode"}
             </span>
           </div>
           
           {/* Animated Toggle Switch */}
-          <div
-            className={`w-12 h-6 rounded-full transition-colors duration-300 relative ${
-              theme === "light" ? "bg-gray-600" : "bg-indigo-600"
-            }`}
-          >
+          {mounted && (
             <div
-              className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-md transition-all duration-300 ${
-                theme === "light" ? "left-0.5" : "right-0.5"
+              className={`w-12 h-6 rounded-full transition-colors duration-300 relative ${
+                theme === "light" ? "bg-gray-600" : "bg-indigo-600"
               }`}
-            />
-          </div>
+            >
+              <div
+                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-md transition-all duration-300 ${
+                  theme === "light" ? "left-0.5" : "right-0.5"
+                }`}
+              />
+            </div>
+          )}
         </button>
 
         {/* Logout */}
