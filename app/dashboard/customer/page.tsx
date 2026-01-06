@@ -89,7 +89,6 @@ export default function CustomerDashboard() {
           return;
         }
 
-        // Fetch fresh user data from backend including bank details
         setLoadingBankDetails(true);
         const userResponse = await userApi.getById(storedUser.id);
         
@@ -102,20 +101,17 @@ export default function CustomerDashboard() {
           
           setUser(userResponse.user);
           
-          // Check if bank details are present
           if (userResponse.user.bankAccount) {
             toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
           } else {
             toast.info('💳 Please update your bank details in settings');
           }
         } else {
-          // Fallback to stored user if API fails
           setUser(storedUser);
           toast.warning('Using cached profile data');
         }
         setLoadingBankDetails(false);
 
-        // Fetch transactions
         setLoadingTransactions(true);
         const transactionsResponse = await dashboardApi.getTransactions();
         
@@ -137,7 +133,6 @@ export default function CustomerDashboard() {
         }
         setLoadingTransactions(false);
 
-        // Mock pension plans (replace with actual API call when available)
         const mockPensionPlans: PensionPlan[] = [
           {
             id: "plan1",
@@ -192,7 +187,7 @@ export default function CustomerDashboard() {
 
   if (loading) {
     return (
-      <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-950 dark:to-indigo-950 flex flex-col items-center justify-center transition-colors duration-300">
+      <div className="h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-indigo-950 dark:to-purple-950 flex flex-col items-center justify-center transition-colors duration-300">
         <div className="h-12 w-12 border-4 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
         <p className="mt-4 text-indigo-700 dark:text-indigo-300 font-medium">Loading your dashboard...</p>
       </div>

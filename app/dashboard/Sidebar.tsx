@@ -34,28 +34,13 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  // Prevent hydration errors by only rendering theme-dependent UI after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("user");
+    localStorage.clear();
     document.cookie = "auth=; path=/; max-age=0";
     router.push("/login");
   };
 
-  const handleThemeToggle = () => {
-    console.log("🖱️ Theme toggle clicked! Current:", theme);
-    toggleTheme();
-  };
-
-  // Admin navigation items
   const adminNavItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard/admin" },
     { name: "Manage Users", icon: Users, href: "/dashboard/admin/manage" },
@@ -67,7 +52,6 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
     { name: "Settings", icon: Settings, href: "/dashboard/admin/settings" },
   ];
 
-  // Customer navigation items
   const customerNavItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard/customer" },
     { name: "My Pension", icon: Wallet, href: "/dashboard/customer/pension" },
@@ -81,128 +65,109 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
 
   const navItems = userType === "admin" ? adminNavItems : customerNavItems;
 
-  const SidebarContent = () => (
-    <>
-      {/* Logo & User Info */}
-      <div className="p-6 border-b border-gray-700 dark:border-gray-600 transition-colors duration-300">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 flex items-center justify-center text-white font-bold transition-colors duration-300">
-            {firstName?.[0]?.toUpperCase() || lastName?.[0]?.toUpperCase() || "U"}
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-white text-sm">
-              {firstName} {lastName}
-            </h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500 transition-colors duration-300">
-              {userType === "admin" ? "Administrator" : "Customer"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive
-                  ? "bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white shadow-lg"
-                  : "text-gray-300 dark:text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white"
-              }`}
-            >
-              <Icon size={20} />
-              <span className="font-medium">{item.name}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Footer Actions */}
-      <div className="p-4 border-t border-gray-700 dark:border-gray-600 space-y-2 transition-colors duration-300">
-        {/* Dark Mode Toggle */}
-        <button
-          onClick={handleThemeToggle}
-          className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-300 dark:text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-700 transition-all duration-300 group"
-        >
-          <div className="flex items-center gap-3">
-            {!mounted ? (
-              <div className="w-5 h-5 bg-gray-600 rounded animate-pulse" />
-            ) : theme === "light" ? (
-              <Moon size={20} className="text-blue-400 group-hover:rotate-12 transition-transform duration-300" />
-            ) : (
-              <Sun size={20} className="text-yellow-400 group-hover:rotate-90 transition-transform duration-300" />
-            )}
-            <span className="font-medium">
-              {!mounted ? "Theme" : theme === "light" ? "Dark Mode" : "Light Mode"}
-            </span>
-          </div>
-          
-          {/* Animated Toggle Switch */}
-          {mounted && (
-            <div
-              className={`w-12 h-6 rounded-full transition-colors duration-300 relative ${
-                theme === "dark" ? "bg-indigo-600" : "bg-gray-600"
-              }`}
-            >
-              <div
-                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-md transition-all duration-300 ${
-                  theme === "dark" ? "right-0.5" : "left-0.5"
-                }`}
-              />
-            </div>
-          )}
-        </button>
-
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 dark:text-red-500 hover:bg-red-900/20 dark:hover:bg-red-900/30 transition-all duration-300"
-        >
-          <LogOut size={20} />
-          <span className="font-medium">Logout</span>
-        </button>
-      </div>
-    </>
-  );
-
   return (
     <>
-      {/* Mobile Menu Button */}
+      {/* Mobile Toggle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-gray-900 dark:bg-gray-800 text-white rounded-xl shadow-lg hover:bg-gray-800 dark:hover:bg-gray-700 transition-all duration-300"
-        aria-label="Toggle menu"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-gray-900 dark:bg-gray-800 text-white rounded-lg"
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Mobile Overlay */}
+      {/* Overlay */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-[45] backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-gray-900 dark:bg-gray-800 fixed left-0 top-0 bottom-0 border-r border-gray-800 dark:border-gray-700 z-40 transition-colors duration-300">
-        <SidebarContent />
-      </aside>
-
-      {/* Mobile Sidebar */}
+      {/* Sidebar */}
       <aside
-        className={`lg:hidden fixed top-0 left-0 z-[50] w-64 bg-gray-900 dark:bg-gray-800 h-screen border-r border-gray-800 dark:border-gray-700 transform transition-all duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 left-0 z-40 h-screen w-64 bg-gray-900 dark:bg-gray-800 border-r border-gray-800 dark:border-gray-700 flex flex-col transition-transform lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <SidebarContent />
+        {/* User Info */}
+        <div className="p-6 border-b border-gray-700 dark:border-gray-600">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center text-white font-bold">
+              {firstName?.[0] || "U"}
+            </div>
+            <div>
+              <h3 className="text-white text-sm font-semibold">
+                {firstName} {lastName}
+              </h3>
+              <p className="text-gray-400 dark:text-gray-500 text-xs">
+                {userType === "admin" ? "Administrator" : "Customer"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                  isActive
+                    ? "bg-indigo-600 dark:bg-indigo-500 text-white"
+                    : "text-gray-300 dark:text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-700"
+                }`}
+              >
+                <Icon size={20} />
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-gray-700 dark:border-gray-600 space-y-2">
+          {/* Theme Toggle - FIXED: Shows current mode and switches to opposite */}
+          <button
+            onClick={toggleTheme}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-gray-300 dark:text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-700 transition"
+          >
+            <div className="flex items-center gap-3">
+              {/* FIXED: Show current theme icon */}
+              {theme === "dark" ? (
+                <Moon size={20} className="text-blue-400" />
+              ) : (
+                <Sun size={20} className="text-yellow-400" />
+              )}
+              {/* FIXED: Show current mode name */}
+              <span>{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+            </div>
+            <div
+              className={`w-12 h-6 rounded-full relative transition ${
+                theme === "dark" ? "bg-indigo-600" : "bg-gray-600"
+              }`}
+            >
+              <div
+                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition ${
+                  theme === "dark" ? "right-0.5" : "left-0.5"
+                }`}
+              />
+            </div>
+          </button>
+
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 dark:text-red-500 hover:bg-red-900/20 dark:hover:bg-red-900/30 transition"
+          >
+            <LogOut size={20} />
+            <span>Logout</span>
+          </button>
+        </div>
       </aside>
     </>
   );
