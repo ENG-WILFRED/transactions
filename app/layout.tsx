@@ -1,4 +1,3 @@
-///app/layout.tsx
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -23,6 +22,7 @@ export default function RootLayout({
             __html: `
               try {
                 const theme = localStorage.getItem('theme') || 'light';
+                document.documentElement.classList.remove('light', 'dark');
                 document.documentElement.classList.add(theme);
                 console.log('🚀 Initial theme applied:', theme);
               } catch (e) {

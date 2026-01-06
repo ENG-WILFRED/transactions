@@ -1,4 +1,3 @@
-///app/components/ThemeProvider.tsx
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
@@ -53,6 +52,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.classList.add(newTheme);
     
     console.log("✅ Applying theme - After:", root.className);
+    
+    // Double check it was applied
+    setTimeout(() => {
+      console.log("🔍 Verification - HTML classes:", root.className);
+      console.log("🔍 Verification - Has dark?", root.classList.contains("dark"));
+      console.log("🔍 Verification - Has light?", root.classList.contains("light"));
+      
+      // Additional debugging
+      const body = document.body;
+      const computedStyle = window.getComputedStyle(body);
+      console.log("🎨 Body background-color:", computedStyle.backgroundColor);
+      console.log("🎨 Body color:", computedStyle.color);
+    }, 50);
   };
 
   const setTheme = (newTheme: Theme) => {

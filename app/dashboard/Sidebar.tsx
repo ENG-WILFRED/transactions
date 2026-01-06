@@ -53,12 +53,6 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
   const handleThemeToggle = () => {
     console.log("🖱️ Theme toggle clicked! Current:", theme);
     toggleTheme();
-    
-    // Debug: Check result after a moment
-    setTimeout(() => {
-      console.log("📊 After toggle - HTML class:", document.documentElement.className);
-      console.log("📊 After toggle - localStorage:", localStorage.getItem("theme"));
-    }, 100);
   };
 
   // Admin navigation items
@@ -132,15 +126,14 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
 
       {/* Footer Actions */}
       <div className="p-4 border-t border-gray-700 dark:border-gray-600 space-y-2 transition-colors duration-300">
-        {/* Dark Mode Toggle - With proper hydration handling */}
+        {/* Dark Mode Toggle */}
         <button
           onClick={handleThemeToggle}
           className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-300 dark:text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-700 transition-all duration-300 group"
         >
           <div className="flex items-center gap-3">
-            {/* Show placeholder during SSR, actual theme after mount */}
             {!mounted ? (
-              <div className="w-5 h-5" />
+              <div className="w-5 h-5 bg-gray-600 rounded animate-pulse" />
             ) : theme === "light" ? (
               <Moon size={20} className="text-blue-400 group-hover:rotate-12 transition-transform duration-300" />
             ) : (
@@ -155,12 +148,12 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
           {mounted && (
             <div
               className={`w-12 h-6 rounded-full transition-colors duration-300 relative ${
-                theme === "light" ? "bg-gray-600" : "bg-indigo-600"
+                theme === "dark" ? "bg-indigo-600" : "bg-gray-600"
               }`}
             >
               <div
                 className={`w-5 h-5 bg-white rounded-full absolute top-0.5 shadow-md transition-all duration-300 ${
-                  theme === "light" ? "left-0.5" : "right-0.5"
+                  theme === "dark" ? "right-0.5" : "left-0.5"
                 }`}
               />
             </div>
@@ -181,7 +174,7 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
 
   return (
     <>
-      {/* Mobile Menu Button - Fixed Position */}
+      {/* Mobile Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-gray-900 dark:bg-gray-800 text-white rounded-xl shadow-lg hover:bg-gray-800 dark:hover:bg-gray-700 transition-all duration-300"
@@ -198,12 +191,12 @@ export default function Sidebar({ userType, firstName, lastName }: SidebarProps)
         />
       )}
 
-      {/* Sidebar - Desktop (ALWAYS VISIBLE - FIXED) */}
+      {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-gray-900 dark:bg-gray-800 fixed left-0 top-0 bottom-0 border-r border-gray-800 dark:border-gray-700 z-40 transition-colors duration-300">
         <SidebarContent />
       </aside>
 
-      {/* Sidebar - Mobile (Slide In/Out) */}
+      {/* Mobile Sidebar */}
       <aside
         className={`lg:hidden fixed top-0 left-0 z-[50] w-64 bg-gray-900 dark:bg-gray-800 h-screen border-r border-gray-800 dark:border-gray-700 transform transition-all duration-300 ease-in-out flex flex-col ${
           isOpen ? "translate-x-0" : "-translate-x-full"
