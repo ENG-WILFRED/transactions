@@ -19,7 +19,7 @@ import type {
 import { parseAccount, parseAccounts } from './account-schemas';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-const DEFAULT_TIMEOUT = 60000; 
+const DEFAULT_TIMEOUT = 20000; 
 
 interface ApiResponse<T = any> {
   success: boolean;
