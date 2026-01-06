@@ -20,15 +20,16 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              try {
-                const theme = localStorage.getItem('theme') || 'light';
-                document.documentElement.classList.remove('light', 'dark');
-                document.documentElement.classList.add(theme);
-                console.log('🚀 Initial theme applied:', theme);
-              } catch (e) {
-                console.error('Theme init error:', e);
-                document.documentElement.classList.add('light');
-              }
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme') || 'light';
+                  const root = document.documentElement;
+                  root.classList.remove('light', 'dark');
+                  root.classList.add(theme);
+                } catch (e) {
+                  console.error('Theme init error:', e);
+                }
+              })();
             `,
           }}
         />
