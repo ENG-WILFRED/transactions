@@ -34,7 +34,11 @@ interface User {
   dateOfBirth?: string;
   numberOfChildren?: number;
   address?: any;
-  bankAccount?: BankAccount;
+  bankName?: string;
+  accountNumber?: string;
+  accountName?: string;
+  branchCode?: string;
+  branchName?: string;
   kra?: string;
   nssfNumber?: string;
   role?: 'customer' | 'admin';
@@ -72,6 +76,25 @@ export default function CustomerDashboard() {
   const [loadingTransactions, setLoadingTransactions] = useState(true);
   const [loadingBankDetails, setLoadingBankDetails] = useState(true);
 
+  // Helper function to extract bank details from user object
+  const getBankDetails = (user: User | null): BankAccount | undefined => {
+    if (!user) return undefined;
+    
+    // Check if any bank details exist as direct fields on user
+    const hasDirectDetails = user.bankName || user.accountNumber || user.accountName;
+    if (hasDirectDetails) {
+      return {
+        bankName: user.bankName,
+        accountNumber: user.accountNumber,
+        accountName: user.accountName,
+        branchCode: user.branchCode,
+        branchName: user.branchName,
+      };
+    }
+    
+    return undefined;
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -90,6 +113,8 @@ export default function CustomerDashboard() {
         }
 
         setLoadingBankDetails(true);
+        
+        // Fetch fresh user data from backend
         const userResponse = await userApi.getById(storedUser.id);
         
         if (userResponse.success && userResponse.user) {
@@ -99,14 +124,22 @@ export default function CustomerDashboard() {
             return;
           }
           
+          // Update state with fresh data
           setUser(userResponse.user);
           
-          if (userResponse.user.bankAccount) {
+          // Update localStorage with fresh data
+          localStorage.setItem('user', JSON.stringify(userResponse.user));
+          
+          // Check for bank details using the helper function
+          const bankDetails = getBankDetails(userResponse.user);
+          
+          if (bankDetails && bankDetails.bankName) {
             toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
           } else {
             toast.info('💳 Please update your bank details in settings');
           }
         } else {
+          // Fallback to cached data
           setUser(storedUser);
           toast.warning('Using cached profile data');
         }
@@ -194,6 +227,9 @@ export default function CustomerDashboard() {
     );
   }
 
+  // Get bank details using helper function
+  const bankDetails = getBankDetails(user);
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <UserProfile user={user} />
@@ -219,7 +255,7 @@ export default function CustomerDashboard() {
           retirementAge={user?.retirementAge}
         />
         <BankDetailsComponent 
-          bankAccount={user?.bankAccount}
+          bankAccount={bankDetails}
           loading={loadingBankDetails}
         />
       </div>

@@ -20,7 +20,11 @@ interface User {
   email: string;
   firstName?: string;
   lastName?: string;
-  bankAccount?: BankAccount;
+  bankName?: string;
+  accountNumber?: string;
+  accountName?: string;
+  branchCode?: string;
+  branchName?: string;
   role?: string;
 }
 
@@ -41,18 +45,27 @@ export default function BankDetailsSettingsPage() {
           return;
         }
 
-        // Fetch fresh user data
+        // Fetch fresh user data from the backend
         const userResponse = await userApi.getById(storedUser.id);
         
         if (userResponse.success && userResponse.user) {
+          // Update both state and localStorage with fresh data
           setUser(userResponse.user);
+          localStorage.setItem('user', JSON.stringify(userResponse.user));
         } else {
+          // Fallback to stored user if fetch fails
           setUser(storedUser);
           toast.warning('Using cached user data');
         }
       } catch (error) {
         console.error('Error loading user:', error);
         toast.error('Failed to load user data');
+        
+        // Try to use cached data as fallback
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          setUser(JSON.parse(userStr));
+        }
       } finally {
         setLoading(false);
       }
@@ -65,11 +78,14 @@ export default function BankDetailsSettingsPage() {
     // Refresh user data after successful update
     try {
       if (user?.id) {
+        // Wait a moment for the backend to update
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         const userResponse = await userApi.getById(user.id);
         if (userResponse.success && userResponse.user) {
           setUser(userResponse.user);
-          // Update localStorage
           localStorage.setItem('user', JSON.stringify(userResponse.user));
+          toast.success('Bank details updated successfully!');
         }
       }
       
@@ -79,8 +95,29 @@ export default function BankDetailsSettingsPage() {
       }, 1500);
     } catch (error) {
       console.error('Error refreshing user data:', error);
+      toast.warning('Bank details saved, but failed to refresh display');
     }
   };
+
+  // Extract bank details from user object
+  const getBankDetails = (): BankAccount => {
+    if (!user) return {};
+    
+    return {
+      bankName: user.bankName,
+      accountNumber: user.accountNumber,
+      accountName: user.accountName,
+      branchCode: user.branchCode,
+      branchName: user.branchName,
+    };
+  };
+
+  const currentBankDetails = getBankDetails();
+  const hasBankDetails = !!(
+    currentBankDetails.bankName || 
+    currentBankDetails.accountNumber || 
+    currentBankDetails.accountName
+  );
 
   if (loading) {
     return (
@@ -123,14 +160,55 @@ export default function BankDetailsSettingsPage() {
             Bank Account Settings
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Update your bank account information for receiving pension payments
+            {hasBankDetails ? 'Update' : 'Add'} your bank account information for receiving pension payments
           </p>
         </div>
+
+        {/* Current Bank Details Display (if exists) */}
+        {hasBankDetails && (
+          <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Current Bank Details
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {currentBankDetails.bankName && (
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Bank Name</p>
+                  <p className="text-gray-900 dark:text-white font-medium">{currentBankDetails.bankName}</p>
+                </div>
+              )}
+              {currentBankDetails.accountName && (
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Account Name</p>
+                  <p className="text-gray-900 dark:text-white font-medium">{currentBankDetails.accountName}</p>
+                </div>
+              )}
+              {currentBankDetails.accountNumber && (
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Account Number</p>
+                  <p className="text-gray-900 dark:text-white font-medium">{currentBankDetails.accountNumber}</p>
+                </div>
+              )}
+              {currentBankDetails.branchCode && (
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Branch Code</p>
+                  <p className="text-gray-900 dark:text-white font-medium">{currentBankDetails.branchCode}</p>
+                </div>
+              )}
+              {currentBankDetails.branchName && (
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Branch Name</p>
+                  <p className="text-gray-900 dark:text-white font-medium">{currentBankDetails.branchName}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Bank Details Form */}
         <UpdateBankDetailsForm
           userId={user.id}
-          currentBankDetails={user.bankAccount}
+          currentBankDetails={currentBankDetails}
           onSuccess={handleSuccess}
         />
 

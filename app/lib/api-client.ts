@@ -265,6 +265,11 @@ export const userApi = {
     occupation?: string;
     employer?: string;
     nationalId?: string;
+    bankName?: string;
+    accountNumber?: string;
+    accountName?: string;
+    branchCode?: string;
+    branchName?: string;
   }, timeout?: number) =>
     apiCall(`/api/users/${userId}`, {
       method: 'PUT',
@@ -272,16 +277,20 @@ export const userApi = {
     }, timeout),
   delete: (userId: string, timeout?: number) =>
     apiCall(`/api/users/${userId}`, { method: 'DELETE' }, timeout),
+  
+  // Update bank details through the general user update endpoint
   updateBankDetails: (userId: string, data: {
     bankName?: string;
     accountNumber?: string;
     accountName?: string;
     branchCode?: string;
+    branchName?: string;
   }, timeout?: number) =>
-    apiCall(`/api/users/${userId}/bank-details`, {
+    apiCall(`/api/users/${userId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     }, timeout),
+  
   getUserNamesByPhone: (phone: string, timeout?: number) =>
     apiCall(`/api/users/user-names-by-phone?phone=${phone}`, { method: 'GET' }, timeout),
   promoteToAdmin: async (userId: string, timeout?: number) => {
