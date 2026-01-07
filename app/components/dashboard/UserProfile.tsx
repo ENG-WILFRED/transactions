@@ -12,9 +12,10 @@ interface User {
 
 interface UserProfileProps {
   user: User | null;
+  onOpenSettings?: () => void;
 }
 
-export default function UserProfile({ user }: UserProfileProps) {
+export default function UserProfile({ user, onOpenSettings }: UserProfileProps) {
   const formatDate = (dateString?: string): string => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
@@ -35,7 +36,15 @@ export default function UserProfile({ user }: UserProfileProps) {
               <p className="text-gray-500 text-xs mt-1">Member Since: {formatDate(user?.createdAt)}</p>
             </div>
           </div>
-          <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Active</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => onOpenSettings?.()}
+              className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md text-sm font-medium"
+            >
+              Account Settings
+            </button>
+            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Active</span>
+          </div>
         </div>
       </div>
 

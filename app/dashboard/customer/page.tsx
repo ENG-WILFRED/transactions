@@ -11,6 +11,7 @@ import UpdateBankDetailsForm from '@/app/components/settings/UpdateBankDetailsFo
 import PensionPlans from "@/app/components/dashboard/PensionPlans";
 import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
 import QuickActions from "@/app/components/dashboard/QuickActions";
+import CustomerSettings from '@/app/dashboard/customer/settings/page';
 import { userApi, dashboardApi } from "@/app/lib/api-client";
 
 interface BankAccount {
@@ -78,6 +79,7 @@ export default function CustomerDashboard() {
   const [loadingTransactions, setLoadingTransactions] = useState(true);
   const [loadingBankDetails, setLoadingBankDetails] = useState(true);
   const [bankModalOpen, setBankModalOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
   // Helper function to extract bank details from user object
   const getBankDetails = (user: User | null): BankAccount | undefined => {
@@ -269,10 +271,13 @@ export default function CustomerDashboard() {
     }
   };
 
+  const handleOpenSettings = () => setSettingsModalOpen(true);
+  const handleCloseSettings = () => setSettingsModalOpen(false);
+
   return (
     <>
     <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <UserProfile user={user} />
+      <UserProfile user={user} onOpenSettings={handleOpenSettings} />
       
       <BalanceCards 
         balance={balance} 
@@ -328,6 +333,20 @@ export default function CustomerDashboard() {
             currentBankDetails={bankDetails}
             onSuccess={handleBankUpdateSuccess}
           />
+        </div>
+      </div>
+    )}
+
+    {/* Settings modal */}
+    {settingsModalOpen && (
+      <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full p-6 transition-colors duration-300">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Account Settings</h3>
+            <button onClick={handleCloseSettings} className="text-gray-500 hover:text-gray-700">✕</button>
+          </div>
+          {/* render the existing settings page component inside the modal */}
+          <CustomerSettings />
         </div>
       </div>
     )}
