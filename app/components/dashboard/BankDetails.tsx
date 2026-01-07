@@ -12,9 +12,10 @@ interface BankAccount {
 interface BankDetailsProps {
   bankAccount?: BankAccount;
   loading?: boolean;
+  onEdit?: () => void;
 }
 
-export default function BankDetailsComponent({ bankAccount, loading = false }: BankDetailsProps) {
+export default function BankDetailsComponent({ bankAccount, loading = false, onEdit }: BankDetailsProps) {
   // Show loading state
   if (loading) {
     return (
@@ -63,13 +64,23 @@ export default function BankDetailsComponent({ bankAccount, loading = false }: B
           <CreditCard size={20} className="text-indigo-600 dark:text-indigo-400" />
           Bank Account
         </h3>
-        <Link
-          href="/settings/bank-details"
-          className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg"
-          title="Edit bank details"
-        >
-          <Edit size={18} />
-        </Link>
+        {onEdit ? (
+          <button
+            onClick={onEdit}
+            className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg"
+            title="Edit bank details"
+          >
+            <Edit size={18} />
+          </button>
+        ) : (
+          <Link
+            href="/settings/bank-details"
+            className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors p-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg"
+            title="Edit bank details"
+          >
+            <Edit size={18} />
+          </Link>
+        )}
       </div>
       
       <div className="space-y-3 text-sm">

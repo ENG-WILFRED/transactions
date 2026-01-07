@@ -7,6 +7,7 @@ import UserProfile from "@/app/components/dashboard/UserProfile";
 import BalanceCards from "@/app/components/dashboard/BalanceCards";
 import EmploymentDetails from "@/app/components/dashboard/EmploymentDetails";
 import BankDetailsComponent from "@/app/components/dashboard/BankDetails";
+import UpdateBankDetailsForm from '@/app/components/settings/UpdateBankDetailsForm';
 import PensionPlans from "@/app/components/dashboard/PensionPlans";
 import TransactionHistory from "@/app/components/dashboard/TransactionHistory";
 import QuickActions from "@/app/components/dashboard/QuickActions";
@@ -76,6 +77,7 @@ export default function CustomerDashboard() {
   const [loading, setLoading] = useState(true);
   const [loadingTransactions, setLoadingTransactions] = useState(true);
   const [loadingBankDetails, setLoadingBankDetails] = useState(true);
+  const [bankModalOpen, setBankModalOpen] = useState(false);
 
   // Helper function to extract bank details from user object
   const getBankDetails = (user: User | null): BankAccount | undefined => {
@@ -156,6 +158,9 @@ export default function CustomerDashboard() {
           toast.warning('Using cached profile data');
         }
         setLoadingBankDetails(false);
+
+        // Pre-fill phone if available in user profile for deposit/other forms
+        // (no-op here, kept for future enhancements)
 
         setLoadingTransactions(true);
         const transactionsResponse = await dashboardApi.getTransactions();
@@ -242,7 +247,30 @@ export default function CustomerDashboard() {
   // Get bank details using helper function
   const bankDetails = getBankDetails(user);
 
+  const handleOpenBankModal = () => setBankModalOpen(true);
+  const handleCloseBankModal = () => setBankModalOpen(false);
+
+  const handleBankUpdateSuccess = async () => {
+    // refresh user from API after update
+    try {
+      const userStr = localStorage.getItem('user');
+      const storedUser = userStr ? JSON.parse(userStr) : null;
+      if (!storedUser?.id) return;
+      const userResponse = await userApi.getById(storedUser.id);
+      if (userResponse.success && userResponse.user) {
+        setUser(userResponse.user);
+        localStorage.setItem('user', JSON.stringify(userResponse.user));
+        toast.success('Bank details updated');
+      }
+    } catch (err) {
+      console.warn('Failed to refresh user after bank update', err);
+    } finally {
+      handleCloseBankModal();
+    }
+  };
+
   return (
+    <>
     <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <UserProfile user={user} />
       
@@ -269,6 +297,7 @@ export default function CustomerDashboard() {
         <BankDetailsComponent 
           bankAccount={bankDetails}
           loading={loadingBankDetails}
+          onEdit={handleOpenBankModal}
         />
       </div>
 
@@ -285,5 +314,23 @@ export default function CustomerDashboard() {
       
       <QuickActions userType="customer" />
     </div>
+
+    {/* Bank details edit modal */}
+    {bankModalOpen && user && (
+      <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 transition-colors duration-300">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Edit Bank Details</h3>
+            <button onClick={handleCloseBankModal} className="text-gray-500 hover:text-gray-700">✕</button>
+          </div>
+          <UpdateBankDetailsForm
+            userId={user.id}
+            currentBankDetails={bankDetails}
+            onSuccess={handleBankUpdateSuccess}
+          />
+        </div>
+      </div>
+    )}
+    </>
   );
 }
