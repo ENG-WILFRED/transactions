@@ -466,6 +466,37 @@ export const accountsApi = {
   
   delete: (id: string, timeout?: number) =>
     apiCall(`/api/accounts/${id}`, { method: 'DELETE' }, timeout),
+
+  // Account-level bank details
+  getBankDetails: (accountId: string, timeout?: number) =>
+    apiCall(`/api/accounts/${accountId}/bank-details`, { method: 'GET' }, timeout),
+
+  createBankDetails: (accountId: string, data: {
+    bankName: string;
+    accountNumber: string;
+    accountName: string;
+    branchCode?: string;
+    branchName?: string;
+  }, timeout?: number) =>
+    apiCall(`/api/accounts/${accountId}/bank-details`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }, timeout),
+
+  updateBankDetails: (accountId: string, data: {
+    bankName?: string;
+    accountNumber?: string;
+    accountName?: string;
+    branchCode?: string;
+    branchName?: string;
+  }, timeout?: number) =>
+    apiCall(`/api/accounts/${accountId}/bank-details`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }, timeout),
+
+  deleteBankDetails: (accountId: string, timeout?: number) =>
+    apiCall(`/api/accounts/${accountId}/bank-details`, { method: 'DELETE' }, timeout),
 };
 
 // ========================================
