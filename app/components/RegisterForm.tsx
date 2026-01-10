@@ -465,82 +465,108 @@ export default function RegisterForm() {
 
   return (
     <>
-      <div className="min-h-screen w-full bg-white flex flex-col lg:flex-row">
+      <div className="min-h-screen w-full bg-[#0a0e1a] flex flex-col lg:flex-row">
         {/* Branding Panel - Desktop only */}
-        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 items-center justify-center p-12 min-h-screen relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0f1624] via-[#1a2332] to-[#0a0e1a] items-center justify-center p-16 min-h-screen relative overflow-hidden">
+          {/* Decorative elements - static */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
           
-          <div className="relative z-10 text-center max-w-md">
-            <div className="mb-12 flex justify-center">
-              <div className="relative">
+          {/* Geometric decorative elements */}
+          <div className="absolute top-20 right-20 w-72 h-72 border border-orange-500/10 rounded-full"></div>
+          <div className="absolute bottom-32 left-16 w-96 h-96 border border-orange-500/5 rounded-full"></div>
+          
+          <div className="relative z-10 max-w-lg">
+            <div className="mb-16">
+              <div className="relative inline-block">
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-transparent rounded-3xl blur-2xl"></div>
                 <img
                   src="/pensions.jpeg"
                   alt="AutoNest Pension logo"
-                  className="w-28 h-28 object-cover rounded-2xl shadow-xl border-2 border-white/20"
+                  className="relative w-32 h-32 object-cover rounded-2xl shadow-2xl border-2 border-orange-500/20"
                 />
               </div>
             </div>
 
-            <h1 className="text-5xl font-black text-white mb-4 leading-tight">Secure Your<br />Future Today</h1>
+            <h1 className="text-6xl font-black text-white mb-6 leading-tight tracking-tight">
+              Secure Your<br />Future Today
+            </h1>
             
-            <p className="text-xl text-blue-100 mb-8 font-medium">Start your AutoNest Pension journey in minutes</p>
+            <p className="text-xl text-gray-300 mb-12 font-medium leading-relaxed">
+              Start your AutoNest Pension journey in minutes
+            </p>
 
-            <div className="space-y-4 text-left mt-12 pt-8 border-t border-white/20">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-1">
+            <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-transparent mb-12 rounded-full"></div>
+
+            <div className="space-y-5">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
                   1
                 </div>
                 <div>
-                  <p className="text-white text-sm font-semibold">Create Account</p>
-                  <p className="text-blue-100 text-xs">Quick registration in 5 steps</p>
+                  <p className="text-white text-base font-semibold">Create Account</p>
+                  <p className="text-gray-400 text-sm leading-relaxed">Quick registration in 5 simple steps</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-1">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
                   2
                 </div>
                 <div>
-                  <p className="text-white text-sm font-semibold">Quick Payment</p>
-                  <p className="text-blue-100 text-xs">Only 1 KES via M-Pesa</p>
+                  <p className="text-white text-base font-semibold">Quick Payment</p>
+                  <p className="text-gray-400 text-sm leading-relaxed">Only 1 KES via M-Pesa to activate</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-1">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
                   3
                 </div>
                 <div>
-                  <p className="text-white text-sm font-semibold">Start Growing</p>
-                  <p className="text-blue-100 text-xs">Access your pension account</p>
+                  <p className="text-white text-base font-semibold">Start Growing</p>
+                  <p className="text-gray-400 text-sm leading-relaxed">Access your pension dashboard instantly</p>
                 </div>
               </div>
             </div>
 
-            <p className="text-white/60 text-xs mt-12 pt-8 border-t border-white/10">
-              Join thousands managing their retirement with AutoNest Pension
-            </p>
+            <div className="mt-16 pt-8 border-t border-white/10">
+              <p className="text-gray-400 text-sm font-light">
+                Join thousands managing their retirement with AutoNest Pension
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Form Panel */}
-        <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto flex flex-col rounded-none shadow-2xl">
-          <div className="flex items-center justify-between gap-4 p-6 border-b">
+        <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto flex flex-col bg-[#0f1624]">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-4 p-6 border-b border-gray-800 bg-[#0f1624]/90 backdrop-blur-sm sticky top-0 z-20">
             <div className="flex items-center gap-3">
-              <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-8 h-8 rounded-md object-cover shadow-sm" />
-              <div className="text-lg font-semibold text-gray-900">AutoNest Pension</div>
+              <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-9 h-9 rounded-lg object-cover shadow-sm border border-orange-500/20" />
+              <div className="text-lg font-bold text-white">AutoNest Pension</div>
             </div>
-            <div>
-              <Link href="/login" className="text-sm bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 px-4 py-2 rounded-lg shadow-sm text-indigo-600 hover:bg-indigo-50 font-semibold transition">Already registered? Sign in</Link>
-            </div>
+            <Link 
+              href="/login" 
+              className="text-sm bg-orange-500/10 border border-orange-500/20 px-5 py-2.5 rounded-lg text-orange-400 hover:bg-orange-500/15 font-semibold transition"
+            >
+              Already registered? Sign in
+            </Link>
           </div>
 
           <div className="flex-1 overflow-auto p-6 sm:p-8 lg:p-10">
             <div className="mb-8">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">Create Account</h2>
-              <p className="text-gray-600 mt-1">Step <span className="font-bold text-indigo-600">{step + 1}</span> of <span className="font-bold text-indigo-600">{steps.length}</span> — <span className="font-semibold">{steps[step]}</span></p>
+              <div className="inline-block px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-400 text-xs font-semibold mb-4 tracking-wide uppercase border border-orange-500/20">
+                Registration
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-black text-white mb-2">Create Account</h2>
+              <p className="text-gray-400 mt-1">
+                Step <span className="font-bold text-orange-400">{step + 1}</span> of <span className="font-bold text-orange-400">{steps.length}</span> — <span className="font-semibold text-gray-300">{steps[step]}</span>
+              </p>
 
-              <div className="w-full bg-gray-200 h-2 rounded-full mt-4 overflow-hidden">
-                <div className="h-2 bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-300" style={{ width: `${((step + 1) / steps.length) * 100}%` }} />
+              <div className="w-full bg-gray-800 h-2 rounded-full mt-5 overflow-hidden">
+                <div 
+                  className="h-2 bg-gradient-to-r from-orange-600 to-orange-500 transition-all duration-300" 
+                  style={{ width: `${((step + 1) / steps.length) * 100}%` }} 
+                />
               </div>
             </div>
 
@@ -626,14 +652,18 @@ export default function RegisterForm() {
             </form>
           </div>
 
-          <div className="border-t bg-white p-4 lg:p-6 sticky bottom-0 shadow-xl">
+          <div className="border-t border-gray-800 bg-[#0f1624] p-4 lg:p-6 sticky bottom-0 shadow-2xl">
             <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
               <div className="flex items-center gap-3 w-full">
                 <button
                   type="button"
                   onClick={handleBack}
                   disabled={step === 0}
-                  className={`flex-1 px-6 py-3 rounded-xl font-semibold border-2 text-base transition ${step === 0 ? 'text-gray-400 border-gray-200 cursor-not-allowed bg-gray-50' : 'text-indigo-700 border-indigo-300 hover:bg-indigo-50 bg-white'}`}
+                  className={`flex-1 px-6 py-3 rounded-xl font-semibold border-2 text-base transition ${
+                    step === 0 
+                      ? 'text-gray-600 border-gray-800 cursor-not-allowed bg-gray-900' 
+                      : 'text-orange-400 border-orange-500/30 hover:bg-orange-500/10 bg-[#1a2332]'
+                  }`}
                 >
                   ← Back
                 </button>
@@ -642,7 +672,7 @@ export default function RegisterForm() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white text-base font-semibold hover:shadow-lg transition flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white text-base font-bold hover:shadow-lg hover:shadow-orange-500/20 transition flex items-center justify-center gap-2"
                   >
                     Next →
                   </button>
@@ -651,7 +681,7 @@ export default function RegisterForm() {
                     type="button"
                     onClick={handleNext}
                     disabled={loading}
-                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white text-base font-semibold hover:shadow-lg disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white text-base font-bold hover:shadow-lg hover:shadow-green-500/20 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>
@@ -673,7 +703,11 @@ export default function RegisterForm() {
                   <button
                     key={s}
                     onClick={() => { setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className={`w-3 h-3 rounded-full transition ${i <= step ? 'bg-indigo-600 w-8 rounded-full' : 'bg-gray-300 hover:bg-gray-400'} focus:outline-none`}
+                    className={`h-3 rounded-full transition focus:outline-none ${
+                      i <= step 
+                        ? 'bg-orange-500 w-8' 
+                        : 'bg-gray-700 hover:bg-gray-600 w-3'
+                    }`}
                     aria-label={`Step ${i + 1}`}
                     title={s}
                   />
