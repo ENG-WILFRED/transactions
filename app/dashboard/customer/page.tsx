@@ -215,6 +215,12 @@ export default function CustomerDashboard() {
               } else if (!bankDetailsResponse.success && bankDetailsResponse.error && bankDetailsResponse.error.toString().includes('404')) {
                 console.log('[Dashboard] No bank details found (404) - user needs to add them');
                 toast.info('💳 Please update your bank details in settings');
+                // Open the bank details modal so user can add details immediately
+                try {
+                  setBankModalOpen(true);
+                } catch (e) {
+                  console.warn('[Dashboard] Failed to open bank modal automatically', e);
+                }
               } else if (!bankDetailsResponse.success) {
                 console.error('[Dashboard] Error fetching bank details:', bankDetailsResponse.error || bankDetailsResponse);
                 toast.info('💳 Could not load bank details');
