@@ -7,12 +7,6 @@ import type {
   RegistrationStatusResponse,
   LoginResponse,
   OtpVerificationResponse,
-  ChangePinFormData,
-  ChangePinResponse,
-  RequestPinResetFormData,
-  RequestPinResetResponse,
-  VerifyPinResetFormData,
-  VerifyPinResetResponse,
   UssdLoginFormData,
   UssdLoginResponse,
 } from './schemas';
@@ -152,33 +146,6 @@ export const authApi = {
   // Resend OTP to user
   resendOtp: (data: { identifier: string }, timeout?: number) =>
     apiCall('/api/auth/resend-otp', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }, timeout),
-  changePin: (data: ChangePinFormData, timeout?: number) =>
-    apiCall<ChangePinResponse>('/api/auth/change-pin', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }, timeout),
-  requestPinReset: (data: RequestPinResetFormData, timeout?: number) =>
-    apiCall<RequestPinResetResponse>('/api/auth/reset-pin', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }, timeout),
-  verifyPinReset: (data: VerifyPinResetFormData, timeout?: number) =>
-    apiCall<VerifyPinResetResponse>('/api/auth/reset-pin/verify', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }, timeout),
-  // Request OTP to set PIN (authenticated)
-  setPin: (data: { phone?: string }, timeout?: number) =>
-    apiCall('/api/auth/set-pin', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }, timeout),
-  // Verify OTP and set PIN (authenticated)
-  verifySetPin: (data: { otp: string; pin: string }, timeout?: number) =>
-    apiCall('/api/auth/set-pin/verify', {
       method: 'POST',
       body: JSON.stringify(data),
     }, timeout),
