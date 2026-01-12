@@ -229,8 +229,18 @@ export default function RegisterForm() {
     // Save auth data
     if (token && typeof window !== 'undefined') {
       localStorage.setItem('auth_token', token);
-      if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
+      
+      // If user object exists but is missing role, set default role
+      let userToStore = user;
+      if (user && !user.role) {
+        userToStore = {
+          ...user,
+          role: 'customer',
+        };
+      }
+      
+      if (userToStore) {
+        localStorage.setItem('user', JSON.stringify(userToStore));
       }
     }
     
@@ -403,7 +413,7 @@ export default function RegisterForm() {
 
           // Still pending - continue polling
           if (status === 'payment_pending' && attempts === 1) {
-            toast.loading('⏳ Waiting for payment confirmation...');
+            toast('⏳ Waiting for payment confirmation...', { duration: 3000 });
           }
         } else {
           // Handle error responses

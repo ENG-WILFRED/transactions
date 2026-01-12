@@ -52,15 +52,12 @@ export default function Dashboard() {
         const user = JSON.parse(userStr);
         console.log('[Dashboard] User role:', user.role);
 
-        // Validate user object
+        // Validate user object - if missing role, assume customer
         if (!user.role) {
-          console.error('[Dashboard] User object missing role:', user);
-          if (mounted) {
-            toast.error('Invalid session data');
-            localStorage.clear();
-            router.replace('/login');
-          }
-          return;
+          console.warn('[Dashboard] User object missing role, assuming customer:', user);
+          user.role = 'customer'; // Default role
+          // Update localStorage with role
+          localStorage.setItem('user', JSON.stringify(user));
         }
 
         // Add small delay to prevent race conditions

@@ -109,8 +109,18 @@ export default function VerifyOtpClient() {
 
       if (token && typeof window !== 'undefined') {
         localStorage.setItem('auth_token', token);
-        if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
+        
+        // If user object exists but is missing role, set default role
+        let userToStore = user;
+        if (user && !user.role) {
+          userToStore = {
+            ...user,
+            role: 'customer', // Default role for newly logged-in users
+          };
+        }
+        
+        if (userToStore) {
+          localStorage.setItem('user', JSON.stringify(userToStore));
         }
       }
 

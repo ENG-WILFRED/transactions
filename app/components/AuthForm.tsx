@@ -110,6 +110,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
 
     let attempts = 0;
     const maxAttempts = 120;
+    let toastShown = false;
 
     const poll = async () => {
       attempts++;
@@ -120,13 +121,17 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
             toast.error((res as any).error || 'Payment failed. Please try again.');
             setPolling(false);
             setLoading(false);
+            setPaymentPending(null);
             return;
           }
           console.warn('Status check returned non-success', res);
         } else {
           const s = (res as any).status;
-          if (s === 'payment_pending') {
-            if (attempts === 1) toast('Waiting for payment confirmation...');
+          
+          // Only show waiting message on first poll, and only if still pending
+          if (s === 'payment_pending' && !toastShown) {
+            toastShown = true;
+            toast('⏳ Waiting for payment confirmation...', { duration: 3000 });
           }
 
           if (s === 'registration_completed') {
@@ -134,9 +139,10 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
             if (token && typeof window !== 'undefined') {
               localStorage.setItem('auth_token', token);
             }
-            toast.success('Registration completed — you are now signed in');
+            toast.success('✅ Registration completed — you are now signed in');
             setPolling(false);
             setLoading(false);
+            setPaymentPending(null);
             router.push('/dashboard');
             return;
           }
@@ -145,6 +151,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
             toast.error((res as any).error || 'Payment failed. Please try again.');
             setPolling(false);
             setLoading(false);
+            setPaymentPending(null);
             return;
           }
         }
@@ -153,6 +160,7 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
           toast.error('Registration timeout. Please try again.');
           setPolling(false);
           setLoading(false);
+          setPaymentPending(null);
           return;
         }
       } catch (err) {
