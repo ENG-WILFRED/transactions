@@ -132,6 +132,7 @@ export default function CustomerDashboard() {
         
         // Fetch fresh user data from backend
         const userResponse = await userApi.getById(storedUser.id);
+        console.log('[Dashboard] User API response:', userResponse);
         
         if (userResponse.success && userResponse.user) {
           if (userResponse.user.role === 'admin') {
@@ -145,33 +146,47 @@ export default function CustomerDashboard() {
           
           // Update localStorage with fresh data
           localStorage.setItem('user', JSON.stringify(userResponse.user));
-          console.log(userResponse.user);
+          console.log('[Dashboard] User data:', userResponse.user);
           
           // Fetch user's accounts to get account ID for bank details
           try {
             const accountsResponse = await accountsApi.getAll();
+            console.log('[Dashboard] Accounts API response:', accountsResponse);
+            
             if (accountsResponse.success && accountsResponse.accounts && accountsResponse.accounts.length > 0) {
               // Get the first account and fetch its bank details
               const firstAccount = accountsResponse.accounts[0];
               const accountId = firstAccount.id || firstAccount.accountNumber;
               
+              console.log('[Dashboard] First account:', firstAccount);
+              console.log('[Dashboard] Account ID being used:', accountId);
+              
               if (accountId) {
-                const bankDetailsResponse = await accountsApi.getBankDetails(accountId);
+                const bankDetailsResponse = await accountsApi.getBankDetails(String(accountId));
+                console.log('[Dashboard] Bank details response:', bankDetailsResponse);
+                
                 if (bankDetailsResponse.success && bankDetailsResponse.bankDetails) {
+                  console.log('[Dashboard] Bank details found:', bankDetailsResponse.bankDetails);
                   toast.success(`Welcome back, ${userResponse.user.firstName || storedUser.firstName}!`);
                 } else {
+                  console.log('[Dashboard] No bank details found - user needs to add them');
                   toast.info('💳 Please update your bank details in settings');
                 }
+              } else {
+                console.warn('[Dashboard] Could not extract account ID from account object', firstAccount);
+                toast.warning('⚠️ Could not load account details');
               }
             } else {
+              console.warn('[Dashboard] No accounts found for user', accountsResponse);
               toast.info('💳 No accounts found. Please complete your account setup.');
             }
           } catch (err) {
-            console.warn('Failed to fetch accounts or bank details:', err);
+            console.error('[Dashboard] Error fetching accounts or bank details:', err);
             toast.info('💳 Could not load bank details');
           }
         } else {
           // Fallback to cached data
+          console.warn('[Dashboard] User API failed, using cached data:', userResponse);
           setUser(storedUser);
           toast.warning('Using cached profile data');
         }
