@@ -136,8 +136,23 @@ export default function AuthForm({ isLogin = false }: AuthFormProps) {
 
           if (s === 'registration_completed') {
             const token = (res as any).token;
+            const user = (res as any).user;
+            
             if (token && typeof window !== 'undefined') {
               localStorage.setItem('auth_token', token);
+              
+              // Ensure user has role, default to 'customer' if missing
+              let userToStore = user;
+              if (user && !user.role) {
+                userToStore = {
+                  ...user,
+                  role: 'customer',
+                };
+              }
+              
+              if (userToStore) {
+                localStorage.setItem('user', JSON.stringify(userToStore));
+              }
             }
             toast.success('✅ Registration completed — you are now signed in');
             setPolling(false);
