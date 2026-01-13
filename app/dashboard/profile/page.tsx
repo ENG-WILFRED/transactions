@@ -1,5 +1,3 @@
-///home/hp/JERE/AutoNest/app/dashboard/profile/page.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -17,7 +15,8 @@ import {
   X,
   Loader2,
   Shield,
-  CreditCard
+  CreditCard,
+  CheckCircle2
 } from "lucide-react";
 
 interface UserProfile {
@@ -127,8 +126,8 @@ export default function ProfilePage() {
     return (
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-indigo-600 dark:text-indigo-400" />
-          <p className="ml-4 text-gray-600 dark:text-gray-400 font-medium">Loading profile...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-orange-600 dark:text-orange-400" />
+          <p className="ml-4 text-slate-600 dark:text-slate-400 font-medium">Loading profile...</p>
         </div>
       </div>
     );
@@ -138,36 +137,40 @@ export default function ProfilePage() {
     return (
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center py-20">
-          <User size={64} className="mx-auto text-gray-400 dark:text-gray-600 mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Profile not found</p>
+          <User size={64} className="mx-auto text-slate-400 dark:text-slate-600 mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">Profile not found</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8">
+    <div className="px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">My Profile</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">View and manage your personal information</p>
+              <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white transition-colors duration-300">
+                My Profile
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400 mt-2 transition-colors duration-300">
+                View and manage your personal information
+              </p>
             </div>
             {!editing ? (
               <button
                 onClick={() => setEditing(true)}
-                className="flex items-center gap-2 bg-indigo-600 dark:bg-indigo-500 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition font-semibold shadow-lg"
+                className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white px-6 py-3 rounded-xl transition-all font-bold shadow-lg hover:shadow-xl hover:shadow-orange-500/30 hover:-translate-y-0.5"
               >
                 <Edit size={20} />
                 Edit Profile
               </button>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <button
                   onClick={handleCancel}
-                  className="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-3 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition font-semibold"
+                  className="flex items-center gap-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-5 py-3 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-all font-bold"
                 >
                   <X size={20} />
                   Cancel
@@ -175,7 +178,7 @@ export default function ProfilePage() {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex items-center gap-2 bg-green-600 dark:bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-400 dark:disabled:bg-gray-600 transition font-semibold"
+                  className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 disabled:from-slate-400 disabled:to-slate-500 dark:disabled:from-slate-600 dark:disabled:to-slate-700 text-white px-6 py-3 rounded-xl transition-all font-bold shadow-lg hover:shadow-xl hover:shadow-green-500/30 hover:-translate-y-0.5 disabled:cursor-not-allowed"
                 >
                   {saving ? (
                     <>
@@ -185,7 +188,7 @@ export default function ProfilePage() {
                   ) : (
                     <>
                       <Save size={20} />
-                      Save
+                      Save Changes
                     </>
                   )}
                 </button>
@@ -195,48 +198,68 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Card */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 text-white">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-3xl font-bold">
-              {user.firstName?.[0]}{user.lastName?.[0]}
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold">
-                {user.firstName} {user.lastName}
-              </h2>
-              <p className="text-indigo-100 dark:text-indigo-200">{user.email}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <Shield size={16} />
-                <span className="text-sm font-semibold uppercase">{user.role}</span>
+        <div className="bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 dark:from-orange-700 dark:via-orange-600 dark:to-orange-700 rounded-3xl shadow-2xl p-8 mb-8 text-white relative overflow-hidden transition-colors duration-300">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 dark:bg-white/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 dark:bg-white/3 rounded-full blur-2xl"></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center gap-5 mb-6">
+              <div className="w-24 h-24 bg-white/20 dark:bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-4xl font-black border-4 border-white/30 dark:border-white/20 shadow-xl">
+                {user.firstName?.[0]}{user.lastName?.[0]}
+              </div>
+              <div className="flex-1">
+                <h2 className="text-3xl font-black mb-1">
+                  {user.firstName} {user.lastName}
+                </h2>
+                <p className="text-orange-100 dark:text-orange-200 text-lg mb-2">{user.email}</p>
+                <div className="flex items-center gap-2 bg-white/20 dark:bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full w-fit">
+                  <Shield size={16} />
+                  <span className="text-sm font-bold uppercase tracking-wide">{user.role}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-indigo-400">
-            <div>
-              <p className="text-indigo-100 dark:text-indigo-200 text-sm">Member Since</p>
-              <p className="font-semibold">
-                {new Date(user.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <p className="text-indigo-100 dark:text-indigo-200 text-sm">Last Updated</p>
-              <p className="font-semibold">
-                {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : "N/A"}
-              </p>
+            
+            <div className="grid grid-cols-2 gap-6 pt-6 border-t border-white/30 dark:border-white/20">
+              <div>
+                <p className="text-orange-100 dark:text-orange-200 text-sm mb-1 font-semibold">Member Since</p>
+                <p className="font-bold text-lg">
+                  {new Date(user.createdAt).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </p>
+              </div>
+              <div>
+                <p className="text-orange-100 dark:text-orange-200 text-sm mb-1 font-semibold">Last Updated</p>
+                <p className="font-bold text-lg">
+                  {user.updatedAt 
+                    ? new Date(user.updatedAt).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      }) 
+                    : "N/A"}
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Profile Details */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 sm:p-8 transition-colors duration-300">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-6">Personal Information</h3>
+        <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-2 border-slate-200 dark:border-slate-700 rounded-3xl shadow-2xl p-8 mb-6 transition-colors duration-300">
+          <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-8 flex items-center gap-2 transition-colors duration-300">
+            <User className="text-orange-600 dark:text-orange-400" size={24} />
+            Personal Information
+          </h3>
 
           <div className="space-y-6">
             {/* Name */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <User size={16} />
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2.5 flex items-center gap-2 transition-colors duration-300">
+                  <User size={16} className="text-orange-600 dark:text-orange-400" />
                   First Name
                 </label>
                 <input
@@ -244,12 +267,12 @@ export default function ProfilePage() {
                   value={editing ? formData.firstName : user.firstName || "Not set"}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   disabled={!editing}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-600 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3.5 disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 dark:focus:ring-orange-400/10 transition-all outline-none font-medium"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <User size={16} />
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2.5 flex items-center gap-2 transition-colors duration-300">
+                  <User size={16} className="text-orange-600 dark:text-orange-400" />
                   Last Name
                 </label>
                 <input
@@ -257,46 +280,49 @@ export default function ProfilePage() {
                   value={editing ? formData.lastName : user.lastName || "Not set"}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   disabled={!editing}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-600 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3.5 disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 dark:focus:ring-orange-400/10 transition-all outline-none font-medium"
                 />
               </div>
             </div>
 
             {/* Contact */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <Mail size={16} />
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2.5 flex items-center gap-2 transition-colors duration-300">
+                  <Mail size={16} className="text-orange-600 dark:text-orange-400" />
                   Email
                 </label>
                 <input
                   type="email"
                   value={user.email}
                   disabled
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                  className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3.5 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-medium transition-colors duration-300"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Email cannot be changed</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1 transition-colors duration-300">
+                  <Shield size={12} />
+                  Email cannot be changed
+                </p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <Phone size={16} />
-                  Phone
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2.5 flex items-center gap-2 transition-colors duration-300">
+                  <Phone size={16} className="text-orange-600 dark:text-orange-400" />
+                  Phone Number
                 </label>
                 <input
                   type="tel"
                   value={editing ? formData.phone : user.phone || "Not set"}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   disabled={!editing}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-600 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3.5 disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 dark:focus:ring-orange-400/10 transition-all outline-none font-medium"
                 />
               </div>
             </div>
 
             {/* Personal Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <Calendar size={16} />
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2.5 flex items-center gap-2 transition-colors duration-300">
+                  <Calendar size={16} className="text-orange-600 dark:text-orange-400" />
                   Date of Birth
                 </label>
                 <input
@@ -304,19 +330,19 @@ export default function ProfilePage() {
                   value={editing ? formData.dateOfBirth : user.dateOfBirth || ""}
                   onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                   disabled={!editing}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-600 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3.5 disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 dark:focus:ring-orange-400/10 transition-all outline-none font-medium"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <User size={16} />
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2.5 flex items-center gap-2 transition-colors duration-300">
+                  <User size={16} className="text-orange-600 dark:text-orange-400" />
                   Gender
                 </label>
                 <select
                   value={editing ? formData.gender : user.gender || ""}
                   onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                   disabled={!editing}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-600 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3.5 disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 dark:focus:ring-orange-400/10 transition-all outline-none font-medium"
                 >
                   <option value="">Select gender</option>
                   <option value="Male">Male</option>
@@ -328,23 +354,24 @@ export default function ProfilePage() {
 
             {/* Address */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                <MapPin size={16} />
-                Address
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2.5 flex items-center gap-2 transition-colors duration-300">
+                <MapPin size={16} className="text-orange-600 dark:text-orange-400" />
+                Street Address
               </label>
               <input
                 type="text"
                 value={editing ? formData.address : user.address || "Not set"}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 disabled={!editing}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-600 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                placeholder="123 Main Street"
+                className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3.5 disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 dark:focus:ring-orange-400/10 transition-all outline-none font-medium placeholder-slate-400 dark:placeholder-slate-500"
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <MapPin size={16} />
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2.5 flex items-center gap-2 transition-colors duration-300">
+                  <MapPin size={16} className="text-orange-600 dark:text-orange-400" />
                   City
                 </label>
                 <input
@@ -352,12 +379,13 @@ export default function ProfilePage() {
                   value={editing ? formData.city : user.city || "Not set"}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   disabled={!editing}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-600 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  placeholder="Nairobi"
+                  className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3.5 disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 dark:focus:ring-orange-400/10 transition-all outline-none font-medium placeholder-slate-400 dark:placeholder-slate-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                  <MapPin size={16} />
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2.5 flex items-center gap-2 transition-colors duration-300">
+                  <MapPin size={16} className="text-orange-600 dark:text-orange-400" />
                   Country
                 </label>
                 <input
@@ -365,7 +393,8 @@ export default function ProfilePage() {
                   value={editing ? formData.country : user.country || "Not set"}
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                   disabled={!editing}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 disabled:bg-gray-50 dark:disabled:bg-gray-700 disabled:text-gray-600 dark:disabled:text-gray-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  placeholder="Kenya"
+                  className="w-full border-2 border-slate-200 dark:border-slate-600 rounded-xl p-3.5 disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-500 dark:disabled:text-slate-400 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-400 focus:ring-4 focus:ring-orange-500/10 dark:focus:ring-orange-400/10 transition-all outline-none font-medium placeholder-slate-400 dark:placeholder-slate-500"
                 />
               </div>
             </div>
@@ -373,19 +402,19 @@ export default function ProfilePage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             onClick={() => router.push(`/dashboard/${user.role === 'admin' ? 'admin' : 'customer'}/settings`)}
-            className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 border-2 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-400 px-6 py-4 rounded-xl hover:bg-indigo-50 dark:hover:bg-gray-700 transition font-semibold"
+            className="flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border-2 border-orange-200 dark:border-orange-700 text-orange-700 dark:text-orange-400 px-6 py-4 rounded-xl hover:bg-orange-50 dark:hover:bg-slate-700 hover:border-orange-300 dark:hover:border-orange-600 transition-all font-bold shadow-md hover:shadow-lg group"
           >
-            <Shield size={20} />
+            <Shield size={20} className="group-hover:scale-110 transition-transform" />
             Security Settings
           </button>
           <button
             onClick={() => router.push(`/dashboard/${user.role === 'admin' ? 'admin' : 'customer'}/accounts`)}
-            className="flex items-center justify-center gap-2 bg-white dark:bg-gray-800 border-2 border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-400 px-6 py-4 rounded-xl hover:bg-purple-50 dark:hover:bg-gray-700 transition font-semibold"
+            className="flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border-2 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-400 px-6 py-4 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all font-bold shadow-md hover:shadow-lg group"
           >
-            <CreditCard size={20} />
+            <CreditCard size={20} className="group-hover:scale-110 transition-transform" />
             My Accounts
           </button>
         </div>

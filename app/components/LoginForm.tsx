@@ -42,37 +42,26 @@ export default function LoginForm() {
         } else {
           normalizedId = '+254' + idRaw;
         }
-        console.debug('[Login] Normalized phone from', idRaw, 'to', normalizedId);
       }
-
-      // Debug: log what we will send (safe to log identifier, not password)
-      console.debug('[Login] Sending login request for identifier:', normalizedId);
 
       const result = await authApi.login({
         identifier: normalizedId,
         password: pwd,
       });
 
-      console.debug('[Login] Login response:', result);
-      console.debug('[Login] Response status:', result.success, 'Error:', result.error, 'Message:', result.message);
-
       if (!result.success) {
         const errorMsg = result.error || 'Failed to initiate login';
-        console.error('[Login] Login failed with error:', errorMsg);
         
         if (result.error?.includes('locked') || result.error?.includes('too many')) {
           toast.error('🔒 Account locked due to too many failed login attempts. Please try again later.');
         } else if (result.error?.includes('not found') || result.error?.includes('Invalid') || result.error?.includes('incorrect')) {
           toast.error('❌ Invalid credentials. Please check your email/phone and password.');
-          console.warn('[Login] Credential mismatch. Ensure email/phone and password are correct.');
         } else {
           toast.error(errorMsg);
         }
         setLoading(false);
         return;
       }
-
-      console.log('[Login] OTP sent successfully to:', idRaw);
 
       toast.success('📧 OTP sent! Check your email or SMS.');
       
@@ -83,7 +72,6 @@ export default function LoginForm() {
       router.push(`/verify-otp?identifier=${encodeURIComponent(normalizedId)}`);
     } catch (err) {
       toast.error('⚠️ An unexpected error occurred. Please try again.');
-      console.error(err);
       setLoading(false);
     }
   };

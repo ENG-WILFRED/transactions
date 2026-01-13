@@ -76,7 +76,6 @@ export default function VerifyOtpClient() {
         } else {
           id = '+254' + id;
         }
-        console.debug('[VerifyOtp] Normalized phone to:', id);
       }
 
       const res = await authApi.loginOtp({
