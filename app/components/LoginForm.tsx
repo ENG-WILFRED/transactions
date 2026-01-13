@@ -29,23 +29,11 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      // Normalize inputs
       const idRaw = identifier.trim();
       const pwd = password.trim();
 
-      let normalizedId = idRaw;
-      if (/^\d{10,15}$/.test(idRaw)) {
-        if (idRaw.startsWith('0')) {
-          normalizedId = '+254' + idRaw.substring(1);
-        } else if (idRaw.startsWith('254')) {
-          normalizedId = '+' + idRaw;
-        } else {
-          normalizedId = '+254' + idRaw;
-        }
-      }
-
       const result = await authApi.login({
-        identifier: normalizedId,
+        identifier: idRaw,
         password: pwd,
       });
 
@@ -66,10 +54,10 @@ export default function LoginForm() {
       toast.success('📧 OTP sent! Check your email or SMS.');
       
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_identifier', normalizedId);
+        localStorage.setItem('auth_identifier', idRaw);
       }
 
-      router.push(`/verify-otp?identifier=${encodeURIComponent(normalizedId)}`);
+      router.push(`/verify-otp?identifier=${encodeURIComponent(idRaw)}`);
     } catch (err) {
       toast.error('⚠️ An unexpected error occurred. Please try again.');
       setLoading(false);

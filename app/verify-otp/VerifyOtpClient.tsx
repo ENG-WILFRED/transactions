@@ -67,17 +67,6 @@ export default function VerifyOtpClient() {
         (typeof window !== 'undefined' ? localStorage.getItem('auth_identifier') : null) || 
         '';
 
-      // Normalize phone format if needed
-      if (/^\d{10,15}$/.test(id)) {
-        if (id.startsWith('0')) {
-          id = '+254' + id.substring(1);
-        } else if (id.startsWith('254')) {
-          id = '+' + id;
-        } else {
-          id = '+254' + id;
-        }
-      }
-
       const res = await authApi.loginOtp({
         identifier: id,
         otp: otpValue,
@@ -131,7 +120,7 @@ export default function VerifyOtpClient() {
       try {
         document.cookie = 'auth=true; path=/; max-age=86400';
       } catch (err) {
-        console.warn('Failed to set auth cookie', err);
+        // Silently fail if auth cookie cannot be set
       }
 
       toast.success('✅ Login successful! Redirecting to dashboard...');
@@ -143,7 +132,6 @@ export default function VerifyOtpClient() {
       setTimeout(() => router.push('/dashboard'), 1000);
     } catch (err) {
       toast.error('⚠️ An unexpected error occurred. Please try again.');
-      console.error(err);
       setLoading(false);
     }
   };
@@ -184,7 +172,6 @@ export default function VerifyOtpClient() {
       setTimer(60);
       setResendLoading(false);
     } catch (err) {
-      console.error('Resend OTP error:', err);
       toast.error('⚠️ Failed to resend OTP. Please try logging in again.');
       setResendLoading(false);
     }
