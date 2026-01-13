@@ -1,4 +1,3 @@
-///home/hp/JERE/AutoNest/app/components/RegisterForm.tsx
 'use client';
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
@@ -7,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { authApi, termsApi } from '@/app/lib/api-client';
 import { registrationSchema, type RegistrationFormData } from '@/app/lib/schemas';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft, CheckCircle2, Sparkles, Zap, Lock } from 'lucide-react';
 import { ZodError } from 'zod';
 
 import AccountCredentialsSection from './sections/AccountCredentialsSection';
@@ -39,19 +38,14 @@ export default function RegisterForm() {
   const [loadingTerms, setLoadingTerms] = useState(false);
 
   const [formData, setFormData] = useState<Partial<RegistrationFormData>>({
-    // Account credentials
     email: '',
     phone: '',
     pin: '',
-    
-    // Bank account details
     bankAccountName: '',
     bankAccountNumber: '',
     bankBranchName: '',
     bankBranchCode: '',
     bankName: '',
-    
-    // Personal information
     firstName: '',
     lastName: '',
     dateOfBirth: '',
@@ -61,18 +55,12 @@ export default function RegisterForm() {
     spouseDob: '',
     children: [],
     nationalId: '',
-    
-    // Address
     address: '',
     city: '',
     country: '',
-    
-    // Employment
     occupation: '',
     employer: '',
     salary: undefined,
-    
-    // Pension details
     contributionRate: undefined,
     retirementAge: undefined,
     accountType: 'MANDATORY',
@@ -101,9 +89,14 @@ export default function RegisterForm() {
     }
   };
 
-  // Multi-step UI state
   const [step, setStep] = useState(0);
-  const steps = ['Account', 'Personal', 'Address', 'Employment', 'Pension & Bank'];
+  const steps = [
+    { title: 'Account', icon: '👤', desc: 'Your credentials' },
+    { title: 'Personal', icon: '📋', desc: 'About you' },
+    { title: 'Address', icon: '📍', desc: 'Your location' },
+    { title: 'Employment', icon: '💼', desc: 'Work details' },
+    { title: 'Pension & Bank', icon: '🏦', desc: 'Final setup' }
+  ];
 
   const validateStep = (idx: number) => {
     const e: Record<string, string> = {};
@@ -208,7 +201,6 @@ export default function RegisterForm() {
     ]);
   };
 
-  // ✅ FIXED: Clear polling interval helper
   const stopPolling = () => {
     console.log('[Register] Stopping polling...');
     setPolling(false);
@@ -227,11 +219,9 @@ export default function RegisterForm() {
     setPaymentPending(null);
     setLoading(false);
     
-    // Save auth data
     if (token && typeof window !== 'undefined') {
       localStorage.setItem('auth_token', token);
       
-      // If user object exists but is missing role, set default role
       let userToStore = user;
       if (user && !user.role) {
         userToStore = {
@@ -244,7 +234,6 @@ export default function RegisterForm() {
         localStorage.setItem('user', JSON.stringify(userToStore));
       }
       
-      // Store account information if available
       if (account) {
         console.log('[Register] Storing account data:', account);
         localStorage.setItem('account', JSON.stringify(account));
@@ -253,7 +242,6 @@ export default function RegisterForm() {
     
     toast.success('🎉 Registration completed! Redirecting to dashboard...');
     
-    // Redirect after short delay
     setTimeout(() => {
       router.push('/dashboard');
     }, 1500);
@@ -303,7 +291,6 @@ export default function RegisterForm() {
 
       const { checkoutRequestId, statusCheckUrl, transactionId, message, status, token, user, account } = result as any;
 
-      // ✅ FIXED: Check if already completed
       if (status === 'registration_completed' || token) {
         handleRegistrationSuccess(token, user, account);
         return;
@@ -321,7 +308,6 @@ export default function RegisterForm() {
         return;
       }
 
-      // Fallback - shouldn't happen but handle gracefully
       toast.success('✅ Account created successfully! Redirecting to login...');
       setTimeout(() => router.push('/login'), 1500);
     } catch (err: any) {
@@ -335,7 +321,6 @@ export default function RegisterForm() {
     }
   };
 
-  // Fetch Terms and Conditions
   useEffect(() => {
     const fetchTerms = async () => {
       setLoadingTerms(true);
@@ -354,7 +339,6 @@ export default function RegisterForm() {
     fetchTerms();
   }, []);
 
-  // ✅ FIXED: Payment status polling with proper cleanup
   useEffect(() => {
     if (!paymentPending?.transactionId || !polling) {
       return;
@@ -362,13 +346,12 @@ export default function RegisterForm() {
 
     console.log('[Register] Starting payment polling...', { transactionId: paymentPending.transactionId });
 
-    const maxAttempts = 120; // 120 * 2s = 240s (4 minutes)
+    const maxAttempts = 120;
 
     const poll = async () => {
       pollAttemptsRef.current++;
       const attempts = pollAttemptsRef.current;
       
-      // Check total timeout
       const elapsedTime = Date.now() - (pollStartTimeRef.current || Date.now());
       if (elapsedTime > PAYMENT_TOTAL_TIMEOUT) {
         console.log('[Register] Payment timeout reached');
@@ -379,7 +362,6 @@ export default function RegisterForm() {
         return;
       }
 
-      // Check max attempts
       if (attempts >= maxAttempts) {
         console.log('[Register] Max polling attempts reached');
         toast.error('⏱️ Maximum attempts reached. Please check the transaction status.');
@@ -402,11 +384,10 @@ export default function RegisterForm() {
         if (res.success) {
           const { status, token, user, account } = res as any;
           
-          // ✅ FIXED: Immediately handle success
           if (status === 'registration_completed' && token) {
             console.log('[Register] Payment confirmed! Registration complete.', { account });
             handleRegistrationSuccess(token, user, account);
-            return; // Stop polling immediately
+            return;
           }
 
           if (status === 'payment_failed') {
@@ -418,12 +399,10 @@ export default function RegisterForm() {
             return;
           }
 
-          // Still pending - continue polling
           if (status === 'payment_pending' && attempts === 1) {
             toast('⏳ Waiting for payment confirmation...', { duration: 3000 });
           }
         } else {
-          // Handle error responses
           const status = (res as any).status;
           
           if (status === 'payment_failed') {
@@ -436,20 +415,16 @@ export default function RegisterForm() {
           }
         }
       } catch (err: any) {
-        // Silently handle expected timeout errors during polling
         if (err.message !== 'Request timeout') {
           console.error('[Register] Poll error:', err);
         }
       }
     };
 
-    // Start polling immediately
     poll();
     
-    // Then poll every 2 seconds
     pollRef.current = setInterval(poll, POLL_INTERVAL);
 
-    // Cleanup
     return () => {
       if (pollRef.current) {
         clearInterval(pollRef.current);
@@ -458,7 +433,6 @@ export default function RegisterForm() {
     };
   }, [paymentPending?.transactionId, polling, router]);
 
-  // ✅ FIXED: Cleanup on unmount
   useEffect(() => {
     return () => {
       stopPolling();
@@ -482,115 +456,154 @@ export default function RegisterForm() {
 
   return (
     <>
-      <div className="min-h-screen w-full bg-[#0a0e1a] flex flex-col lg:flex-row">
-        {/* Branding Panel - Desktop only */}
-        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0f1624] via-[#1a2332] to-[#0a0e1a] items-center justify-center p-16 min-h-screen relative overflow-hidden">
-          {/* Decorative elements - static */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
+      <div className="min-h-screen w-full flex flex-col lg:flex-row">
+        {/* LEFT HALF - DARK THEME */}
+        <div className="lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 lg:p-16 flex flex-col justify-center relative overflow-hidden min-h-screen">
+          {/* Animated background elements */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-orange-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
           
-          {/* Geometric decorative elements */}
-          <div className="absolute top-20 right-20 w-72 h-72 border border-orange-500/10 rounded-full"></div>
-          <div className="absolute bottom-32 left-16 w-96 h-96 border border-orange-500/5 rounded-full"></div>
-          
-          <div className="relative z-10 max-w-lg">
-            <div className="mb-16">
+          {/* Geometric patterns */}
+          <div className="absolute top-20 right-20 w-64 h-64 border border-orange-500/10 rounded-full"></div>
+          <div className="absolute bottom-32 left-16 w-80 h-80 border border-orange-500/5 rounded-full"></div>
+
+          <div className="relative z-10 max-w-xl mx-auto w-full">
+            {/* Logo */}
+            <div className="mb-10">
               <div className="relative inline-block">
                 <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-transparent rounded-3xl blur-2xl"></div>
                 <img
                   src="/pensions.jpeg"
                   alt="AutoNest Pension logo"
-                  className="relative w-32 h-32 object-cover rounded-2xl shadow-2xl border-2 border-orange-500/20"
+                  className="relative w-20 h-20 lg:w-24 lg:h-24 object-cover rounded-2xl shadow-2xl border-2 border-orange-500/30"
                 />
               </div>
             </div>
 
-            <h1 className="text-6xl font-black text-white mb-6 leading-tight tracking-tight">
-              Secure Your<br />Future Today
+            {/* Heading */}
+            <h1 className="text-5xl lg:text-7xl font-black text-white mb-6 leading-[1.1] tracking-tight">
+              Secure Your
+              <span className="block text-transparent bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 bg-clip-text mt-2">
+                Future Today
+              </span>
             </h1>
             
-            <p className="text-xl text-gray-300 mb-12 font-medium leading-relaxed">
-              Start your AutoNest Pension journey in minutes
+            {/* Subheading */}
+            <p className="text-xl lg:text-2xl text-slate-300 mb-12 font-light leading-relaxed">
+              Join thousands building their retirement with AutoNest Pension
             </p>
 
-            <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-transparent mb-12 rounded-full"></div>
+            {/* Divider */}
+            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-transparent mb-10 rounded-full"></div>
 
+            {/* Steps Overview */}
             <div className="space-y-5">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
-                  1
+              <div className="flex items-start gap-4 group cursor-pointer">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-500/20 group-hover:shadow-orange-500/40 group-hover:scale-105 transition-all duration-300">
+                  <Sparkles className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <p className="text-white text-base font-semibold">Create Account</p>
-                  <p className="text-gray-400 text-sm leading-relaxed">Quick registration in 5 simple steps</p>
+                  <h3 className="text-white font-bold text-lg mb-1">Quick Setup</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">Complete registration in just 5 simple steps</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
-                  2
+              
+              <div className="flex items-start gap-4 group cursor-pointer">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-300">
+                  <Zap className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <p className="text-white text-base font-semibold">Quick Payment</p>
-                  <p className="text-gray-400 text-sm leading-relaxed">Only 1 KES via M-Pesa to activate</p>
+                  <h3 className="text-white font-bold text-lg mb-1">Fast Activation</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">Only 1 KES via M-Pesa to activate your account</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
-                  3
+              
+              <div className="flex items-start gap-4 group cursor-pointer">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 group-hover:scale-105 transition-all duration-300">
+                  <Lock className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <p className="text-white text-base font-semibold">Start Growing</p>
-                  <p className="text-gray-400 text-sm leading-relaxed">Access your pension dashboard instantly</p>
+                  <h3 className="text-white font-bold text-lg mb-1">Bank-level Security</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">Your data protected with enterprise encryption</p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-16 pt-8 border-t border-white/10">
-              <p className="text-gray-400 text-sm font-light">
-                Join thousands managing their retirement with AutoNest Pension
-              </p>
+            {/* Trust badge */}
+            <div className="mt-12 pt-8 border-t border-white/10">
+              <div className="flex items-center gap-4">
+                <div className="flex -space-x-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 border-3 border-slate-900"></div>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-3 border-slate-900"></div>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 border-3 border-slate-900"></div>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  Join <span className="font-bold text-white">10,000+</span> planning their retirement
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Form Panel */}
-        <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto flex flex-col bg-[#0f1624]">
+        {/* RIGHT HALF - LIGHT PLEASANT COLOR */}
+        <div className="lg:w-1/2 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 flex flex-col min-h-screen relative overflow-hidden">
+          {/* Subtle decorative elements */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-rose-200/20 rounded-full blur-3xl"></div>
+
           {/* Header */}
-          <div className="flex items-center justify-between gap-4 p-6 border-b border-gray-800 bg-[#0f1624]/90 backdrop-blur-sm sticky top-0 z-20">
+          <div className="border-b border-slate-200/80 bg-white/60 backdrop-blur-md px-8 py-5 flex items-center justify-between sticky top-0 z-20 shadow-sm">
             <div className="flex items-center gap-3">
-              <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-9 h-9 rounded-lg object-cover shadow-sm border border-orange-500/20" />
-              <div className="text-lg font-bold text-white">AutoNest Pension</div>
+              <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-10 h-10 rounded-xl object-cover shadow-sm" />
+              <span className="text-lg font-bold text-slate-900">AutoNest Pension</span>
             </div>
             <Link 
               href="/login" 
-              className="text-sm bg-orange-500/10 border border-orange-500/20 px-5 py-2.5 rounded-lg text-orange-400 hover:bg-orange-500/15 font-semibold transition"
+              className="text-sm font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-700 transition"
             >
-              Already registered? Sign in
+              Sign in
             </Link>
           </div>
 
-          <div className="flex-1 overflow-auto p-6 sm:p-8 lg:p-10">
-            <div className="mb-8">
-              <div className="inline-block px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-400 text-xs font-semibold mb-4 tracking-wide uppercase border border-orange-500/20">
-                Registration
+          {/* Progress Indicator */}
+          <div className="px-8 py-6 bg-white/40 backdrop-blur-sm border-b border-slate-200/80">
+            <div className="max-w-2xl mx-auto">
+              <div className="flex items-center justify-between mb-3">
+                {steps.map((s, i) => (
+                  <div key={i} className="flex items-center">
+                    <button
+                      onClick={() => setStep(i)}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                        i === step 
+                          ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg scale-110' 
+                          : i < step 
+                          ? 'bg-green-500 text-white'
+                          : 'bg-slate-200 text-slate-500'
+                      }`}
+                    >
+                      {i < step ? <CheckCircle2 className="w-5 h-5" /> : i + 1}
+                    </button>
+                    {i < steps.length - 1 && (
+                      <div className={`w-12 lg:w-20 h-1 mx-1 rounded-full transition-all ${
+                        i < step ? 'bg-green-500' : 'bg-slate-200'
+                      }`} />
+                    )}
+                  </div>
+                ))}
               </div>
-              <h2 className="text-3xl lg:text-4xl font-black text-white mb-2">Create Account</h2>
-              <p className="text-gray-400 mt-1">
-                Step <span className="font-bold text-orange-400">{step + 1}</span> of <span className="font-bold text-orange-400">{steps.length}</span> — <span className="font-semibold text-gray-300">{steps[step]}</span>
-              </p>
-
-              <div className="w-full bg-gray-800 h-2 rounded-full mt-5 overflow-hidden">
-                <div 
-                  className="h-2 bg-gradient-to-r from-orange-600 to-orange-500 transition-all duration-300" 
-                  style={{ width: `${((step + 1) / steps.length) * 100}%` }} 
-                />
+              <div className="text-center">
+                <p className="text-sm font-bold text-slate-900">{steps[step].title}</p>
+                <p className="text-xs text-slate-600">{steps[step].desc}</p>
               </div>
             </div>
+          </div>
 
-            <form className="space-y-6 min-h-[55vh]" onSubmit={handleSubmit}>
-              <div className="space-y-4 min-h-[50vh] flex flex-col">
-                {step === 0 && (
-                  <div className="transform scale-100">
+          {/* Form Content */}
+          <div className="flex-1 overflow-auto p-8">
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 lg:p-10 border border-white/50">
+                <form onSubmit={handleSubmit} className="space-y-6 min-h-[400px]">
+                  {step === 0 && (
                     <AccountCredentialsSection
                       formData={{
                         email: formData.email as string,
@@ -600,11 +613,9 @@ export default function RegisterForm() {
                       errors={errors}
                       onChange={handleChange}
                     />
-                  </div>
-                )}
+                  )}
 
-                {step === 1 && (
-                  <div className="transform scale-100">
+                  {step === 1 && (
                     <PersonalSection
                       formData={{
                         firstName: formData.firstName as string,
@@ -619,116 +630,99 @@ export default function RegisterForm() {
                       errors={errors}
                       onChange={handleChange}
                     />
-                  </div>
-                )}
+                  )}
 
-                {step === 2 && (
-                  <AddressSection
-                    formData={{
-                      address: formData.address as string,
-                      city: formData.city as string,
-                      country: formData.country as string,
-                    }}
-                    onChange={handleChange}
-                  />
-                )}
+                  {step === 2 && (
+                    <AddressSection
+                      formData={{
+                        address: formData.address as string,
+                        city: formData.city as string,
+                        country: formData.country as string,
+                      }}
+                      onChange={handleChange}
+                    />
+                  )}
 
-                {step === 3 && (
-                  <EmploymentSection
-                    formData={{
-                      occupation: formData.occupation as string,
-                      employer: formData.employer as string,
-                      salary: formData.salary,
-                    }}
-                    onChange={handleChange}
-                  />
-                )}
+                  {step === 3 && (
+                    <EmploymentSection
+                      formData={{
+                        occupation: formData.occupation as string,
+                        employer: formData.employer as string,
+                        salary: formData.salary,
+                      }}
+                      onChange={handleChange}
+                    />
+                  )}
 
-                {step === 4 && (
-                  <PensionSection
-                    formData={{
-                      contributionRate: formData.contributionRate,
-                      retirementAge: formData.retirementAge,
-                      bankAccountName: formData.bankAccountName as string,
-                      bankAccountNumber: formData.bankAccountNumber as string,
-                      bankBranchName: formData.bankBranchName as string,
-                      bankBranchCode: formData.bankBranchCode as string,
-                      bankName: formData.bankName as string,
-                      accountType: formData.accountType,
-                      riskProfile: formData.riskProfile,
-                    }}
-                    errors={errors}
-                    onChange={handleChange}
-                    termsAccepted={termsAccepted}
-                    onTermsChange={handleTermsChange}
-                    onTermsClick={handleTermsClick}
-                    termsError={termsError}
-                  />
-                )}
-              </div>
-            </form>
-          </div>
+                  {step === 4 && (
+                    <PensionSection
+                      formData={{
+                        contributionRate: formData.contributionRate,
+                        retirementAge: formData.retirementAge,
+                        bankAccountName: formData.bankAccountName as string,
+                        bankAccountNumber: formData.bankAccountNumber as string,
+                        bankBranchName: formData.bankBranchName as string,
+                        bankBranchCode: formData.bankBranchCode as string,
+                        bankName: formData.bankName as string,
+                        accountType: formData.accountType,
+                        riskProfile: formData.riskProfile,
+                      }}
+                      errors={errors}
+                      onChange={handleChange}
+                      termsAccepted={termsAccepted}
+                      onTermsChange={handleTermsChange}
+                      onTermsClick={handleTermsClick}
+                      termsError={termsError}
+                    />
+                  )}
+                </form>
 
-          <div className="border-t border-gray-800 bg-[#0f1624] p-4 lg:p-6 sticky bottom-0 shadow-2xl">
-            <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
-              <div className="flex items-center gap-3 w-full">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  disabled={step === 0}
-                  className={`flex-1 px-6 py-3 rounded-xl font-semibold border-2 text-base transition ${
-                    step === 0 
-                      ? 'text-gray-600 border-gray-800 cursor-not-allowed bg-gray-900' 
-                      : 'text-orange-400 border-orange-500/30 hover:bg-orange-500/10 bg-[#1a2332]'
-                  }`}
-                >
-                  ← Back
-                </button>
-
-                {step < steps.length - 1 ? (
+                {/* Navigation Buttons */}
+                <div className="flex items-center gap-4 mt-8 pt-6 border-t border-slate-200">
                   <button
                     type="button"
-                    onClick={handleNext}
-                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white text-base font-bold hover:shadow-lg hover:shadow-orange-500/20 transition flex items-center justify-center gap-2"
-                  >
-                    Next →
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleNext}
-                    disabled={loading}
-                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white text-base font-bold hover:shadow-lg hover:shadow-green-500/20 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      <>
-                        <span>Complete Registration</span>
-                        <span>→</span>
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 mt-3 sm:mt-0">
-                {steps.map((s, i) => (
-                  <button
-                    key={s}
-                    onClick={() => { setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className={`h-3 rounded-full transition focus:outline-none ${
-                      i <= step 
-                        ? 'bg-orange-500 w-8' 
-                        : 'bg-gray-700 hover:bg-gray-600 w-3'
+                    onClick={handleBack}
+                    disabled={step === 0}
+                    className={`px-6 py-3.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                      step === 0 
+                        ? 'text-slate-400 bg-slate-100 cursor-not-allowed' 
+                        : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200'
                     }`}
-                    aria-label={`Step ${i + 1}`}
-                    title={s}
-                  />
-                ))}
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back
+                  </button>
+
+                  {step < steps.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="flex-1 px-6 py-3.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold hover:shadow-lg hover:shadow-orange-500/30 transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5"
+                    >
+                      Next Step
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      disabled={loading}
+                      className="flex-1 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold hover:shadow-lg hover:shadow-green-500/30 disabled:from-slate-400 disabled:to-slate-500 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Creating Account...
+                        </>
+                      ) : (
+                        <>
+                          Complete Registration
+                          <CheckCircle2 className="w-5 h-5" />
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
