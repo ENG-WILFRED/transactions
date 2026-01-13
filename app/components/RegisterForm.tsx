@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { authApi, termsApi } from '@/app/lib/api-client';
 import { registrationSchema, type RegistrationFormData } from '@/app/lib/schemas';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { ZodError } from 'zod';
 
 import AccountCredentialsSection from './sections/AccountCredentialsSection';
@@ -38,19 +38,14 @@ export default function RegisterForm() {
   const [loadingTerms, setLoadingTerms] = useState(false);
 
   const [formData, setFormData] = useState<Partial<RegistrationFormData>>({
-    // Account credentials
     email: '',
     phone: '',
     pin: '',
-    
-    // Bank account details
     bankAccountName: '',
     bankAccountNumber: '',
     bankBranchName: '',
     bankBranchCode: '',
     bankName: '',
-    
-    // Personal information
     firstName: '',
     lastName: '',
     dateOfBirth: '',
@@ -60,18 +55,12 @@ export default function RegisterForm() {
     spouseDob: '',
     children: [],
     nationalId: '',
-    
-    // Address
     address: '',
     city: '',
     country: '',
-    
-    // Employment
     occupation: '',
     employer: '',
     salary: undefined,
-    
-    // Pension details
     contributionRate: undefined,
     retirementAge: undefined,
     accountType: 'MANDATORY',
@@ -100,9 +89,14 @@ export default function RegisterForm() {
     }
   };
 
-  // Multi-step UI state
   const [step, setStep] = useState(0);
-  const steps = ['Account', 'Personal', 'Address', 'Employment', 'Pension & Bank'];
+  const steps = [
+    { title: 'Account', icon: '👤' },
+    { title: 'Personal', icon: '📋' },
+    { title: 'Address', icon: '📍' },
+    { title: 'Employment', icon: '💼' },
+    { title: 'Pension & Bank', icon: '🏦' }
+  ];
 
   const validateStep = (idx: number) => {
     const e: Record<string, string> = {};
@@ -207,7 +201,6 @@ export default function RegisterForm() {
     ]);
   };
 
-  // ✅ FIXED: Clear polling interval helper
   const stopPolling = () => {
     console.log('[Register] Stopping polling...');
     setPolling(false);
@@ -226,11 +219,9 @@ export default function RegisterForm() {
     setPaymentPending(null);
     setLoading(false);
     
-    // Save auth data
     if (token && typeof window !== 'undefined') {
       localStorage.setItem('auth_token', token);
       
-      // If user object exists but is missing role, set default role
       let userToStore = user;
       if (user && !user.role) {
         userToStore = {
@@ -243,7 +234,6 @@ export default function RegisterForm() {
         localStorage.setItem('user', JSON.stringify(userToStore));
       }
       
-      // Store account information if available
       if (account) {
         console.log('[Register] Storing account data:', account);
         localStorage.setItem('account', JSON.stringify(account));
@@ -252,7 +242,6 @@ export default function RegisterForm() {
     
     toast.success('🎉 Registration completed! Redirecting to dashboard...');
     
-    // Redirect after short delay
     setTimeout(() => {
       router.push('/dashboard');
     }, 1500);
@@ -302,7 +291,6 @@ export default function RegisterForm() {
 
       const { checkoutRequestId, statusCheckUrl, transactionId, message, status, token, user, account } = result as any;
 
-      // ✅ FIXED: Check if already completed
       if (status === 'registration_completed' || token) {
         handleRegistrationSuccess(token, user, account);
         return;
@@ -320,7 +308,6 @@ export default function RegisterForm() {
         return;
       }
 
-      // Fallback - shouldn't happen but handle gracefully
       toast.success('✅ Account created successfully! Redirecting to login...');
       setTimeout(() => router.push('/login'), 1500);
     } catch (err: any) {
@@ -334,7 +321,6 @@ export default function RegisterForm() {
     }
   };
 
-  // Fetch Terms and Conditions
   useEffect(() => {
     const fetchTerms = async () => {
       setLoadingTerms(true);
@@ -353,7 +339,6 @@ export default function RegisterForm() {
     fetchTerms();
   }, []);
 
-  // ✅ FIXED: Payment status polling with proper cleanup
   useEffect(() => {
     if (!paymentPending?.transactionId || !polling) {
       return;
@@ -361,13 +346,12 @@ export default function RegisterForm() {
 
     console.log('[Register] Starting payment polling...', { transactionId: paymentPending.transactionId });
 
-    const maxAttempts = 120; // 120 * 2s = 240s (4 minutes)
+    const maxAttempts = 120;
 
     const poll = async () => {
       pollAttemptsRef.current++;
       const attempts = pollAttemptsRef.current;
       
-      // Check total timeout
       const elapsedTime = Date.now() - (pollStartTimeRef.current || Date.now());
       if (elapsedTime > PAYMENT_TOTAL_TIMEOUT) {
         console.log('[Register] Payment timeout reached');
@@ -378,7 +362,6 @@ export default function RegisterForm() {
         return;
       }
 
-      // Check max attempts
       if (attempts >= maxAttempts) {
         console.log('[Register] Max polling attempts reached');
         toast.error('⏱️ Maximum attempts reached. Please check the transaction status.');
@@ -401,11 +384,10 @@ export default function RegisterForm() {
         if (res.success) {
           const { status, token, user, account } = res as any;
           
-          // ✅ FIXED: Immediately handle success
           if (status === 'registration_completed' && token) {
             console.log('[Register] Payment confirmed! Registration complete.', { account });
             handleRegistrationSuccess(token, user, account);
-            return; // Stop polling immediately
+            return;
           }
 
           if (status === 'payment_failed') {
@@ -417,12 +399,10 @@ export default function RegisterForm() {
             return;
           }
 
-          // Still pending - continue polling
           if (status === 'payment_pending' && attempts === 1) {
             toast('⏳ Waiting for payment confirmation...', { duration: 3000 });
           }
         } else {
-          // Handle error responses
           const status = (res as any).status;
           
           if (status === 'payment_failed') {
@@ -435,20 +415,16 @@ export default function RegisterForm() {
           }
         }
       } catch (err: any) {
-        // Silently handle expected timeout errors during polling
         if (err.message !== 'Request timeout') {
           console.error('[Register] Poll error:', err);
         }
       }
     };
 
-    // Start polling immediately
     poll();
     
-    // Then poll every 2 seconds
     pollRef.current = setInterval(poll, POLL_INTERVAL);
 
-    // Cleanup
     return () => {
       if (pollRef.current) {
         clearInterval(pollRef.current);
@@ -457,7 +433,6 @@ export default function RegisterForm() {
     };
   }, [paymentPending?.transactionId, polling, router]);
 
-  // ✅ FIXED: Cleanup on unmount
   useEffect(() => {
     return () => {
       stopPolling();
@@ -481,144 +456,174 @@ export default function RegisterForm() {
 
   return (
     <>
-      <div className="min-h-screen w-full bg-[#0a0e1a] flex flex-col lg:flex-row">
-        {/* Branding Panel - Desktop only */}
-        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0f1624] via-[#1a2332] to-[#0a0e1a] items-center justify-center p-16 min-h-screen relative overflow-hidden">
-          {/* Decorative elements - static */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
-          
-          {/* Geometric decorative elements */}
-          <div className="absolute top-20 right-20 w-72 h-72 border border-orange-500/10 rounded-full"></div>
-          <div className="absolute bottom-32 left-16 w-96 h-96 border border-orange-500/5 rounded-full"></div>
-          
-          <div className="relative z-10 max-w-lg">
-            <div className="mb-16">
-              <div className="relative inline-block">
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-transparent rounded-3xl blur-2xl"></div>
-                <img
-                  src="/pensions.jpeg"
-                  alt="AutoNest Pension logo"
-                  className="relative w-32 h-32 object-cover rounded-2xl shadow-2xl border-2 border-orange-500/20"
-                />
-              </div>
-            </div>
-
-            <h1 className="text-6xl font-black text-white mb-6 leading-tight tracking-tight">
-              Secure Your<br />Future Today
-            </h1>
-            
-            <p className="text-xl text-gray-300 mb-12 font-medium leading-relaxed">
-              Start your AutoNest Pension journey in minutes
-            </p>
-
-            <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-transparent mb-12 rounded-full"></div>
-
-            <div className="space-y-5">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
-                  1
-                </div>
-                <div>
-                  <p className="text-white text-base font-semibold">Create Account</p>
-                  <p className="text-gray-400 text-sm leading-relaxed">Quick registration in 5 simple steps</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
-                  2
-                </div>
-                <div>
-                  <p className="text-white text-base font-semibold">Quick Payment</p>
-                  <p className="text-gray-400 text-sm leading-relaxed">Only 1 KES via M-Pesa to activate</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg">
-                  3
-                </div>
-                <div>
-                  <p className="text-white text-base font-semibold">Start Growing</p>
-                  <p className="text-gray-400 text-sm leading-relaxed">Access your pension dashboard instantly</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-16 pt-8 border-t border-white/10">
-              <p className="text-gray-400 text-sm font-light">
-                Join thousands managing their retirement with AutoNest Pension
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Form Panel */}
-        <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto flex flex-col bg-[#0f1624]">
-          {/* Header */}
-          <div className="flex items-center justify-between gap-4 p-6 border-b border-gray-800 bg-[#0f1624]/90 backdrop-blur-sm sticky top-0 z-20">
+      <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-orange-50/30 to-blue-50/20 relative overflow-hidden">
+        {/* Decorative background */}
+        <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-br from-orange-200/30 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-blue-200/20 to-transparent rounded-full blur-3xl"></div>
+        
+        {/* Header */}
+        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-9 h-9 rounded-lg object-cover shadow-sm border border-orange-500/20" />
-              <div className="text-lg font-bold text-white">AutoNest Pension</div>
+              <img src="/pensions.jpeg" alt="AutoNest Pension" className="w-10 h-10 rounded-xl object-cover shadow-sm" />
+              <span className="text-lg font-bold text-slate-900">AutoNest Pension</span>
             </div>
             <Link 
               href="/login" 
-              className="text-sm bg-orange-500/10 border border-orange-500/20 px-5 py-2.5 rounded-lg text-orange-400 hover:bg-orange-500/15 font-semibold transition"
+              className="text-sm bg-slate-100 hover:bg-slate-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-700 font-semibold transition"
             >
-              Already registered? Sign in
+              Sign in
             </Link>
           </div>
+        </div>
 
-          <div className="flex-1 overflow-auto p-6 sm:p-8 lg:p-10">
-            <div className="mb-8">
-              <div className="inline-block px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-400 text-xs font-semibold mb-4 tracking-wide uppercase border border-orange-500/20">
-                Registration
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-6 py-12 grid lg:grid-cols-12 gap-8 relative z-10">
+          {/* Left - Progress & Info */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* Progress Steps */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200/50 sticky top-24">
+              <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wide">Registration Progress</h3>
+              <div className="space-y-3">
+                {steps.map((s, i) => (
+                  <div 
+                    key={s.title}
+                    className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
+                      i === step 
+                        ? 'bg-gradient-to-r from-orange-100 to-orange-50 border-2 border-orange-300' 
+                        : i < step 
+                        ? 'bg-green-50 border-2 border-green-200' 
+                        : 'bg-slate-50 border-2 border-slate-200'
+                    }`}
+                  >
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 font-bold text-lg ${
+                      i === step 
+                        ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-md' 
+                        : i < step 
+                        ? 'bg-gradient-to-br from-green-500 to-green-600 text-white' 
+                        : 'bg-slate-200 text-slate-500'
+                    }`}>
+                      {i < step ? <CheckCircle2 className="w-5 h-5" /> : s.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className={`text-sm font-bold ${
+                        i === step ? 'text-orange-900' : i < step ? 'text-green-900' : 'text-slate-600'
+                      }`}>
+                        Step {i + 1}
+                      </div>
+                      <div className={`text-xs ${
+                        i === step ? 'text-orange-700' : i < step ? 'text-green-700' : 'text-slate-500'
+                      }`}>
+                        {s.title}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <h2 className="text-3xl lg:text-4xl font-black text-white mb-2">Create Account</h2>
-              <p className="text-gray-400 mt-1">
-                Step <span className="font-bold text-orange-400">{step + 1}</span> of <span className="font-bold text-orange-400">{steps.length}</span> — <span className="font-semibold text-gray-300">{steps[step]}</span>
-              </p>
 
-              <div className="w-full bg-gray-800 h-2 rounded-full mt-5 overflow-hidden">
-                <div 
-                  className="h-2 bg-gradient-to-r from-orange-600 to-orange-500 transition-all duration-300" 
-                  style={{ width: `${((step + 1) / steps.length) * 100}%` }} 
-                />
+              {/* Progress Bar */}
+              <div className="mt-6 pt-6 border-t border-slate-200">
+                <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
+                  <span className="font-semibold">Overall Progress</span>
+                  <span className="font-bold text-orange-600">{Math.round(((step + 1) / steps.length) * 100)}%</span>
+                </div>
+                <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className="h-2 bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-500 ease-out" 
+                    style={{ width: `${((step + 1) / steps.length) * 100}%` }} 
+                  />
+                </div>
               </div>
             </div>
 
-            <form className="space-y-6 min-h-[55vh]" onSubmit={handleSubmit}>
-              <div className="space-y-4 min-h-[50vh] flex flex-col">
-                {step === 0 && (
-                  <div className="transform scale-100">
-                    <AccountCredentialsSection
-                      formData={{
-                        email: formData.email as string,
-                        phone: formData.phone as string,
-                        pin: formData.pin as string,
-                      }}
-                      errors={errors}
-                      onChange={handleChange}
-                    />
+            {/* Benefits - Hidden on mobile */}
+            <div className="hidden lg:block bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-lg p-6 text-white">
+              <h3 className="text-sm font-bold mb-4 uppercase tracking-wide text-orange-400">Why Choose AutoNest?</h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">🚀</span>
                   </div>
+                  <div>
+                    <div className="text-sm font-semibold">Quick Setup</div>
+                    <div className="text-xs text-slate-400">Only 1 KES to activate</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">🔒</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">Secure Platform</div>
+                    <div className="text-xs text-slate-400">Bank-level encryption</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">📈</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">Smart Growth</div>
+                    <div className="text-xs text-slate-400">AI-powered planning</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right - Form */}
+          <div className="lg:col-span-8">
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200/50">
+              {/* Form Header */}
+              <div className="mb-8">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 text-orange-700 text-xs font-bold mb-4 tracking-wide uppercase">
+                  {steps[step].icon} {steps[step].title}
+                </div>
+                <h2 className="text-3xl font-black text-slate-900 mb-2">
+                  {step === 0 && 'Create Your Account'}
+                  {step === 1 && 'Personal Information'}
+                  {step === 2 && 'Where You Live'}
+                  {step === 3 && 'Employment Details'}
+                  {step === 4 && 'Pension & Banking'}
+                </h2>
+                <p className="text-slate-600">
+                  {step === 0 && 'Let\'s start with your basic credentials'}
+                  {step === 1 && 'Tell us a bit about yourself'}
+                  {step === 2 && 'Your current address information'}
+                  {step === 3 && 'Your work and income details'}
+                  {step === 4 && 'Final step - pension and bank details'}
+                </p>
+              </div>
+
+              {/* Form Content */}
+              <form onSubmit={handleSubmit} className="space-y-6 min-h-[400px]">
+                {step === 0 && (
+                  <AccountCredentialsSection
+                    formData={{
+                      email: formData.email as string,
+                      phone: formData.phone as string,
+                      pin: formData.pin as string,
+                    }}
+                    errors={errors}
+                    onChange={handleChange}
+                  />
                 )}
 
                 {step === 1 && (
-                  <div className="transform scale-100">
-                    <PersonalSection
-                      formData={{
-                        firstName: formData.firstName as string,
-                        lastName: formData.lastName as string,
-                        gender: formData.gender as string,
-                        dateOfBirth: formData.dateOfBirth as string,
-                        nationalId: formData.nationalId as string,
-                        maritalStatus: formData.maritalStatus as string,
-                        spouseName: formData.spouseName as string,
-                        spouseDob: formData.spouseDob as string,
-                      }}
-                      errors={errors}
-                      onChange={handleChange}
-                    />
-                  </div>
+                  <PersonalSection
+                    formData={{
+                      firstName: formData.firstName as string,
+                      lastName: formData.lastName as string,
+                      gender: formData.gender as string,
+                      dateOfBirth: formData.dateOfBirth as string,
+                      nationalId: formData.nationalId as string,
+                      maritalStatus: formData.maritalStatus as string,
+                      spouseName: formData.spouseName as string,
+                      spouseDob: formData.spouseDob as string,
+                    }}
+                    errors={errors}
+                    onChange={handleChange}
+                  />
                 )}
 
                 {step === 2 && (
@@ -664,70 +669,53 @@ export default function RegisterForm() {
                     termsError={termsError}
                   />
                 )}
-              </div>
-            </form>
-          </div>
+              </form>
 
-          <div className="border-t border-gray-800 bg-[#0f1624] p-4 lg:p-6 sticky bottom-0 shadow-2xl">
-            <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
-              <div className="flex items-center gap-3 w-full">
+              {/* Navigation Buttons */}
+              <div className="flex items-center gap-4 mt-8 pt-6 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={handleBack}
                   disabled={step === 0}
-                  className={`flex-1 px-6 py-3 rounded-xl font-semibold border-2 text-base transition ${
+                  className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
                     step === 0 
-                      ? 'text-gray-600 border-gray-800 cursor-not-allowed bg-gray-900' 
-                      : 'text-orange-400 border-orange-500/30 hover:bg-orange-500/10 bg-[#1a2332]'
+                      ? 'text-slate-400 bg-slate-100 cursor-not-allowed' 
+                      : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200'
                   }`}
                 >
-                  ← Back
+                  <ArrowLeft className="w-4 h-4" />
+                  Back
                 </button>
 
                 {step < steps.length - 1 ? (
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white text-base font-bold hover:shadow-lg hover:shadow-orange-500/20 transition flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold hover:shadow-lg hover:shadow-orange-500/30 transition-all flex items-center justify-center gap-2"
                   >
-                    Next →
+                    Next Step
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={handleNext}
                     disabled={loading}
-                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white text-base font-bold hover:shadow-lg hover:shadow-green-500/20 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold hover:shadow-lg hover:shadow-green-500/30 disabled:from-slate-400 disabled:to-slate-500 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        Creating...
+                        Creating Account...
                       </>
                     ) : (
                       <>
-                        <span>Complete Registration</span>
-                        <span>→</span>
+                        Complete Registration
+                        <CheckCircle2 className="w-5 h-5" />
                       </>
                     )}
                   </button>
                 )}
-              </div>
-
-              <div className="flex items-center gap-2 mt-3 sm:mt-0">
-                {steps.map((s, i) => (
-                  <button
-                    key={s}
-                    onClick={() => { setStep(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className={`h-3 rounded-full transition focus:outline-none ${
-                      i <= step 
-                        ? 'bg-orange-500 w-8' 
-                        : 'bg-gray-700 hover:bg-gray-600 w-3'
-                    }`}
-                    aria-label={`Step ${i + 1}`}
-                    title={s}
-                  />
-                ))}
               </div>
             </div>
           </div>
