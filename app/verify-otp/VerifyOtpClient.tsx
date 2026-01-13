@@ -63,9 +63,21 @@ export default function VerifyOtpClient() {
 
     setLoading(true);
     try {
-      const id = identifier || 
+      let id = identifier || 
         (typeof window !== 'undefined' ? localStorage.getItem('auth_identifier') : null) || 
         '';
+
+      // Normalize phone format if needed
+      if (/^\d{10,15}$/.test(id)) {
+        if (id.startsWith('0')) {
+          id = '+254' + id.substring(1);
+        } else if (id.startsWith('254')) {
+          id = '+' + id;
+        } else {
+          id = '+254' + id;
+        }
+        console.debug('[VerifyOtp] Normalized phone to:', id);
+      }
 
       const res = await authApi.loginOtp({
         identifier: id,
