@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { MapPin, Building2, Globe, ChevronDown } from 'lucide-react';
 
 interface AddressSectionProps {
   formData: { address: string; city: string; country: string };
@@ -233,6 +234,7 @@ export default function AddressSection({ formData, onChange }: AddressSectionPro
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setSearchTerm('');
       }
     };
 
@@ -253,85 +255,105 @@ export default function AddressSection({ formData, onChange }: AddressSectionPro
   };
 
   return (
-    <div className="space-y-2 pb-4 mb-4 border-b">
-      <h3 className="text-xs font-bold text-gray-900 uppercase mb-4 tracking-wider">Address</h3>
-
-      <div className="mb-4">
-        <label htmlFor="address" className="block text-xs font-medium text-gray-700 mb-0.5">
+    <div className="space-y-5">
+      {/* Street Address Field - Full Width */}
+      <div>
+        <label htmlFor="address" className="block text-sm font-bold text-slate-700 mb-2.5">
           Street Address
         </label>
-        <input
-          id="address"
-          name="address"
-          type="text"
-          value={formData.address}
-          onChange={onChange}
-          className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-          placeholder="Street"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
-        <div>
-          <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-            City
-          </label>
+        <div className="relative group">
+          <MapPin className="absolute left-4 top-4 w-5 h-5 text-slate-400 group-focus-within:text-orange-500 transition-colors" />
           <input
-            id="city"
-            name="city"
+            id="address"
+            name="address"
             type="text"
-            value={formData.city}
+            placeholder="123 Main Street"
+            value={formData.address}
             onChange={onChange}
-            className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-            placeholder="City"
+            className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 transition-all duration-300 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-orange-500/10 hover:border-slate-300"
           />
         </div>
+      </div>
 
+      {/* City and Country Fields - Side by Side */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* City Field */}
+        <div>
+          <label htmlFor="city" className="block text-sm font-bold text-slate-700 mb-2.5">
+            City
+          </label>
+          <div className="relative group">
+            <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-orange-500 transition-colors" />
+            <input
+              id="city"
+              name="city"
+              type="text"
+              placeholder="Nairobi"
+              value={formData.city}
+              onChange={onChange}
+              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 transition-all duration-300 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-orange-500/10 hover:border-slate-300"
+            />
+          </div>
+        </div>
+
+        {/* Country Field with Searchable Dropdown */}
         <div className="relative" ref={dropdownRef}>
-          <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="country" className="block text-sm font-bold text-slate-700 mb-2.5">
             Country
           </label>
-          <div className="relative">
+          <div className="relative group">
+            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-orange-500 transition-colors z-10" />
             <input
               id="country"
               name="country"
               type="text"
               value={isOpen ? searchTerm : formData.country || 'Kenya'}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                if (!isOpen) setIsOpen(true);
+              }}
               onFocus={() => setIsOpen(true)}
-              className="w-full px-4 py-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+              className="w-full pl-12 pr-12 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-900 placeholder-slate-400 transition-all duration-300 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-orange-500/10 hover:border-slate-300 cursor-pointer"
               placeholder="Search country..."
               autoComplete="off"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
+            <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none transition-transform duration-200 ${
+              isOpen ? 'rotate-180' : ''
+            }`} />
           </div>
 
+          {/* Dropdown */}
           {isOpen && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-50 w-full mt-2 bg-white border-2 border-orange-200 rounded-xl shadow-2xl max-h-64 overflow-y-auto">
               {filteredCountries.length > 0 ? (
-                filteredCountries.map((country) => (
-                  <div
-                    key={country}
-                    onClick={() => handleCountrySelect(country)}
-                    className={`px-4 py-3 cursor-pointer hover:bg-blue-50 transition ${
-                      formData.country === country ? 'bg-blue-100 font-semibold' : ''
-                    }`}
-                  >
-                    {country}
-                  </div>
-                ))
+                <div className="py-1">
+                  {filteredCountries.map((country) => (
+                    <button
+                      key={country}
+                      type="button"
+                      onClick={() => handleCountrySelect(country)}
+                      className={`w-full text-left px-4 py-3 transition-colors ${
+                        formData.country === country 
+                          ? 'bg-orange-100 text-orange-900 font-semibold' 
+                          : 'hover:bg-orange-50 text-slate-700'
+                      }`}
+                    >
+                      {country}
+                    </button>
+                  ))}
+                </div>
               ) : (
-                <div className="px-4 py-3 text-gray-500 text-sm">No countries found</div>
+                <div className="px-4 py-8 text-center">
+                  <svg className="w-12 h-12 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <p className="text-slate-500 text-sm">No countries found</p>
+                  <p className="text-slate-400 text-xs mt-1">Try a different search term</p>
+                </div>
               )}
             </div>
           )}
         </div>
-
-        <div></div>
       </div>
     </div>
   );

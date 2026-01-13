@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Loader2, ArrowRight, ArrowLeft, CheckCircle2, Sparkles, Zap, Lock } from 'lucide-react';
 import { ZodError } from 'zod';
 
+// Import section components - UPDATE THESE PATHS TO MATCH YOUR PROJECT STRUCTURE
 import AccountCredentialsSection from './sections/AccountCredentialsSection';
 import PersonalSection from './sections/PersonalSection';
 import AddressSection from './sections/AddressSection';
