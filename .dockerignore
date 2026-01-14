@@ -1,0 +1,20 @@
+# Frontend .dockerignore to exclude unnecessary files
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env.local
+.env.*.local
+.next/cache
+.vercel
+.DS_Store
+README.md
+.turbo
+dist
+build
+coverage
+.eslintcache
+.prettierignore
+yarn-error.log
+.pnp
+.pnp.js
